@@ -4,7 +4,8 @@
   "private": true,
   "description": "Root package for managing all ReservationsToScreens subprojects",
   "scripts": {
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:infoscreen-react\" \"npm run dev:infoscreen-svelte\"",
+    "start": "npm run dev",
+    "dev": "npm install && concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:infoscreen-react\" \"npm run dev:infoscreen-svelte\"",
     "dev:backend": "cd backend-api && npm install && npm run dev",
     "dev:frontend": "cd RoomManagementFrontend && npm install && npm run dev",
     "dev:infoscreen-react": "cd infoscreenreact && npm install && npm run dev",

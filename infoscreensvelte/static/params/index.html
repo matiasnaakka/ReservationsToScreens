@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfoScreen URL Parameters Guide</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'heading': [ 'Roboto Slab', 'serif' ],
+            'body': [ 'Open Sans', 'sans-serif' ],
+          },
+          colors: {
+            'metropoliaMainOrange': '#ff5000',
+            'metropoliaSecondaryOrange': '#e54b00',
+            'metropoliaMainGrey': '#53565a',
+            'metropoliaSupportWhite': '#ffffff',
+            'metropoliaSupportBlack': '#000000',
+            'metropoliaSupportRed': '#cb2228',
+            'metropoliaSupportSecondaryRed': '#e60000',
+            'metropoliaSupportBlue': '#4046a8',
+            'metropoliaSupportYellow': '#fff000',
+            'metropoliaTrendPink': '#e384c4',
+            'metropoliaTrendLightBlue': '#5db1e4',
+            'metropoliaTrendGreen': '#3ba88f',
+          }
+        }
+      }
+    }
+  </script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto+Slab:wght@400;700&display=swap"
+    rel="stylesheet">
+</head>
+
+<body class="bg-gradient-to-r from-blue-100 to-blue-50 font-body min-h-screen">
+  <div class="container mx-auto max-w-6xl p-4">
+
+    <!-- Header -->
+    <header class="mb-8 text-center">
+      <h1 class="font-heading text-4xl font-bold text-metropoliaMainOrange mb-4 bg-white py-3 rounded-lg shadow-lg">
+        InfoScreen URL Parameters Guide</h1>
+      <p class="text-lg text-metropoliaMainGrey bg-white py-2 rounded-lg shadow-md">Customize your InfoScreen display
+        using URL parameters</p>
+    </header>
+
+    <!-- Instructions Section -->
+    <div
+      class="mb-8 p-6 bg-gradient-to-r from-blue-50 to-white rounded-lg shadow-md border-l-4 border-metropoliaTrendLightBlue">
+      <h2 class="font-heading text-2xl font-bold text-metropoliaMainOrange mb-5">Ohjeet Suomeksi</h2>
+
+      <div class="space-y-4 text-metropoliaMainGrey">
+        <div>
+          <h3 class="font-heading text-lg font-semibold mb-2">Mikä tämä sivu on?</h3>
+          <p>Tällä sivulla voit muokata InfoScreenin näyttöasetuksia. Voit luoda oman URL-osoitteen, joka sisältää
+            haluamasi asetukset.</p>
+        </div>
+
+        <div>
+          <h3 class="font-heading text-lg font-semibold mb-2">Näin käytät URL-rakentajaa:</h3>
+          <ol class="list-decimal pl-5 space-y-2">
+            <li>Valitse haluamasi asetukset <strong>valintaruuduilla</strong> URL-rakentajassa sivun alaosassa.</li>
+            <li>Aseta jokaiselle valitulle parametrille arvo pudotusvalikosta tai kirjoittamalla.</li>
+            <li>Näet luodun URL-osoitteen "Generated URL" -kentässä.</li>
+            <li>Kopioi URL-osoite painamalla "Copy"-nappia.</li>
+            <li>Avaa InfoScreen tällä URL-osoitteella painamalla "Open Generated URL" -nappia.</li>
+          </ol>
+        </div>
+
+        <div>
+          <h3 class="font-heading text-lg font-semibold mb-2">Pikavalinnat:</h3>
+          <p>Käytä "Select All" -nappia valitaksesi kaikki parametrit tai "Clear All" -nappia tyhjentääksesi valinnat.
+          </p>
+        </div>
+
+        <!-- Feedback Note -->
+        <div class="bg-red-100 p-4 rounded-md border-l-4 border-metropoliaSupportRed mt-6">
+          <p class="font-semibold text-metropoliaSupportRed">Palautesivun näyttäminen:</p>
+          <p>Saadaksesi palautesivun näkymään, tarvitset vain parametrin <strong>showFeedback=true</strong></p>
+
+          <!-- Feedback URL with Copy Button -->
+          <div class="mt-4 bg-white p-3 rounded-md shadow-md">
+            <div class="font-semibold mb-2">Kopioi palautesivun URL suoraan:</div>
+            <div class="relative">
+              <pre id="feedbackUrl"
+                class="block overflow-x-auto rounded-md bg-gray-50 p-3 text-sm leading-relaxed text-metropoliaMainGrey">https://krugou.github.io/infoScreenProject/?showFeedback=true</pre>
+              <button onclick="copyToClipboard('feedbackUrl')"
+                class="absolute right-2 top-1 rounded-md bg-metropoliaSupportRed px-3 py-1 text-xs text-white hover:bg-metropoliaSupportSecondaryRed focus:outline-none">Kopioi</button>
+            </div>
+            <div class="mt-3 flex justify-end">
+              <button onclick="openDemoUrl('feedbackUrl')"
+                class="rounded-md bg-metropoliaSupportRed px-3 py-1 font-heading text-sm text-white transition-colors duration-200 hover:bg-metropoliaSupportSecondaryRed focus:outline-none">
+                🚀 Avaa palautesivu
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-md shadow-md border-l-4 border-metropoliaMainOrange mt-6">
+          <p class="font-semibold">Yleisin käyttötapa:</p>
+          <p>1. Valitse <strong>Floor</strong> (kerros) ja <strong>Building</strong> (rakennus).</p>
+          <p>2. Valitse <strong>Mode</strong> (map = kartta, list = lista).</p>
+          <p>3. Kopioi URL ja avaa se selaimessa.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Parameters Grid -->
+    <div class="grid gap-8 md:grid-cols-2">
+
+      <!-- Location Parameters -->
+      <div class="rounded-lg bg-white p-6 shadow-lg">
+        <h2 class="mb-4 font-heading text-xl font-semibold text-metropoliaMainOrange">Location Parameters</h2>
+        <ul class="space-y-4">
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Floor</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?floor=5</code>
+            <span class="mt-1 block text-xs text-gray-500">Available: 2, 5, 6, 7</span>
+          </li>
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Building</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?building=KM</code>
+            <span class="mt-1 block text-xs text-gray-500">Available: KM</span>
+          </li>
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">You Are Here Floor</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?floorYouAreHere=5</code>
+            <span class="mt-1 block text-xs text-gray-500">Floor for "You Are Here" marker (default: 5)</span>
+          </li>
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">You Are Here Floor</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?floorYouAreHere=5</code>
+            <span class="mt-1 block text-xs text-gray-500">Floor for "You Are Here" marker (default: 5)</span>
+          </li>
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">X coordinate</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?x=3</code>
+            <span class="mt-1 block text-xs text-gray-500">Default: 3</span>
+          </li>
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Y coordinate</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?y=6.4</code>
+            <span class="mt-1 block text-xs text-gray-500">Default: 6.4</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Display Settings -->
+      <div class="rounded-lg bg-white p-6 shadow-lg">
+        <h2 class="mb-4 font-heading text-xl font-semibold text-metropoliaMainOrange">Display Settings</h2>
+        <ul class="space-y-4">
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Mode</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?mode=map</code>
+            <span class="mt-1 block text-xs text-gray-500">Available: map, list</span>
+          </li>
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Show feedback</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?showFeedback=true</code>
+            <span class="mt-1 block text-xs text-gray-500">Default: false</span>
+          </li>
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Show URL</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?showUrl=true</code>
+            <span class="mt-1 block text-xs text-gray-500">Default: false</span>
+          </li>
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Show Params Demo</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?showParamDemo=true</code>
+            <span class="mt-1 block text-xs text-gray-500">Shows active parameters at top of screen</span>
+          </li>
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Reservable type</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?reservable=staff</code>
+            <span class="mt-1 block text-xs text-gray-500">Available: all, staff, students</span>
+          </li>
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Room details</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?details=yhteistyötila</code>
+            <span class="mt-1 block text-xs text-gray-500">Filter by room details (e.g., "yhteistyötila")</span>
+          </li>
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Group details</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?groupDetails=groupwork</code>
+            <span class="mt-1 block text-xs text-gray-500">Available: work, studyspace, groupwork, other</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Time & Date -->
+      <div class="rounded-lg bg-white p-6 shadow-lg">
+        <h2 class="mb-4 font-heading text-xl font-semibold text-metropoliaMainOrange">Time & Date</h2>
+        <ul class="space-y-4">
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Specific date</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?specificdate=2025-01-13</code>
+          </li>
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Translation interval</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?translationInterval=15000</code>
+            <span class="mt-1 block text-xs text-gray-500">Default: 15000ms</span>
+          </li>
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Update interval</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?updateInterval=300000</code>
+            <span class="mt-1 block text-xs text-gray-500">Default: 300000ms</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Scroll Settings -->
+      <div class="rounded-lg bg-white p-6 shadow-lg">
+        <h2 class="mb-4 font-heading text-xl font-semibold text-metropoliaMainOrange">Scroll Settings</h2>
+        <ul class="space-y-4">
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Auto-scroll</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?autoScroll=true</code>
+            <span class="mt-1 block text-xs text-gray-500">Enables automatic scrolling through room information</span>
+            <div class="mt-3 p-3 bg-yellow-100 rounded border-l-4 border-metropoliaSupportRed">
+              <span class="text-xs font-semibold text-metropoliaSupportRed">⚠️ IMPORTANT: When using auto-scroll, ensure
+                your digital signage system is configured with enough display time to completely scroll through all
+                rooms. If your display cycles too quickly, users won't see all available information.</span>
+            </div>
+          </li>
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Scroll speed</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?scrollSpeed=1</code>
+            <span class="mt-1 block text-xs text-gray-500">Default: 1 pixel per interval</span>
+          </li>
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Scroll interval</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?scrollInterval=50</code>
+            <span class="mt-1 block text-xs text-gray-500">Default: 50ms</span>
+          </li>
+          <li class="rounded-lg bg-gray-50 p-4 shadow">
+            <div class="font-heading font-medium text-metropoliaMainGrey">Scroll pause</div>
+            <code
+              class="mt-1 block rounded bg-gray-100 px-2 py-1 font-mono text-sm text-metropoliaSecondaryOrange">?scrollPause=1000</code>
+            <span class="mt-1 block text-xs text-gray-500">Default: 1000ms at ends</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Example URLs section -->
+    <div class="mt-8 rounded-lg bg-white p-6 shadow-lg">
+      <h2 class="mb-4 font-heading text-xl font-semibold text-metropoliaMainOrange">Complete URL Example</h2>
+      <div class="mt-8 rounded-lg bg-white p-6 shadow-lg">
+        <h2 class="font-heading text-xl font-semibold text-metropoliaMainOrange">Complete URL Example</h2>
+        <div class="mb-6">
+          <h3 class="font-heading text-lg font-medium text-metropoliaMainGrey mb-2">Full Example</h3>
+          <div class="relative">
+            <pre id="fullUrl"
+              class="block overflow-x-auto rounded-md bg-gray-50 p-4 text-sm leading-relaxed text-metropoliaMainGrey">https://krugou.github.io/infoScreenProject/?floor=5&building=KM&specificdate=2025-01-13&reservable=staff&mode=map&showFeedback=false&updateInterval=300000&translationInterval=15000&autoScroll=true&scrollSpeed=1&scrollInterval=50&scrollPause=1000&showUrl=true&x=3&y=6.4&details=yhteistyötila&showParamDemo=true</pre>
+            <button onclick="copyToClipboard('fullUrl')"
+              class="absolute right-2 top-2 rounded-md bg-metropoliaMainGrey px-3 py-1 text-xs text-white hover:bg-black focus:outline-none">Copy</button>
+          </div>
+          <div class="mt-3 flex justify-end">
+            <button onclick="openDemoUrl('fullUrl')"
+              class="rounded-md bg-metropoliaMainOrange px-4 py-2 font-heading text-sm font-bold text-white transition-colors duration-200 hover:bg-metropoliaSecondaryOrange focus:outline-none">
+              🚀 Open Demo URL
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- URL Builder -->
+      <h3 class="font-heading text-lg font-medium text-metropoliaMainGrey mb-4">URL Builder</h3>
+      <div class="bg-gray-50 p-6 rounded-lg shadow-inner">
+        <div class="mb-4">
+          <label for="baseUrl" class="block mb-2 text-sm font-semibold text-metropoliaMainGrey">Base URL</label>
+          <input type="text" id="baseUrl" value="https://krugou.github.io/infoScreenProject/"
+            class="w-full p-3 border border-gray-300 rounded text-gray-600" />
+        </div>
+
+        <div id="parameterBuilder" class="space-y-4">
+          <!-- Parameters will be generated here by JavaScript -->
+        </div>
+
+        <div class="mt-6">
+          <label class="block mb-2 text-sm font-semibold text-metropoliaMainGrey">Generated URL</label>
+          <div class="relative">
+            <pre id="generatedUrl"
+              class="block overflow-x-auto rounded-md bg-white p-4 text-sm leading-relaxed text-metropoliaMainGrey border">https://krugou.github.io/infoScreenProject/</pre>
+            <button onclick="copyToClipboard('generatedUrl')"
+              class="absolute right-2 top-2 rounded-md bg-metropoliaMainGrey px-3 py-1 text-xs text-white hover:bg-black focus:outline-none">Copy</button>
+          </div>
+          <div class="mt-3 flex justify-end">
+            <button onclick="openDemoUrl('generatedUrl')"
+              class="rounded-md bg-metropoliaMainOrange px-4 py-2 font-heading text-sm font-bold text-white transition-colors duration-200 hover:bg-metropoliaSecondaryOrange focus:outline-none">
+              🚀 Open Generated URL
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Parameter data
+    const parameterGroups = [
+      {
+        title: 'Location Parameters',
+        params: [
+          { name: 'Floor', param: 'floor', value: '5', options: [ '2', '5', '6', '7' ], note: 'Available: 2, 5, 6, 7' },
+          { name: 'Building', param: 'building', value: 'KM', options: [ 'KM' ], note: 'Available: KM' },
+          { name: 'You Are Here Floor', param: 'floorYouAreHere', value: '5', options: [ '2', '5', '6', '7' ], note: 'Floor for "You Are Here" marker (default: 5)' },
+          { name: 'X coordinate', param: 'x', value: '3', note: 'Default: 3' },
+          { name: 'Y coordinate', param: 'y', value: '6.4', note: 'Default: 6.4' }
+        ]
+      },
+      {
+        title: 'Display Settings',
+        params: [
+          { name: 'Mode', param: 'mode', value: 'map', options: [ 'map', 'list' ], note: 'Available: map, list' },
+          { name: 'Show feedback', param: 'showFeedback', value: 'false', options: [ 'true', 'false' ], note: 'Default: false' },
+          { name: 'Show URL', param: 'showUrl', value: 'false', options: [ 'true', 'false' ], note: 'Default: false' },
+          { name: 'Show Params Demo', param: 'showParamDemo', value: 'false', options: [ 'true', 'false' ], note: 'Shows active parameters at top of screen' },
+          { name: 'Reservable type', param: 'reservable', value: 'staff', options: [ 'all', 'staff', 'students' ], note: 'Available: all, staff, students' },
+          { name: 'Group details', param: 'groupDetails', value: 'groupwork', options: [ 'work', 'studyspace', 'groupwork', 'other' ], note: 'Available: work, studyspace, groupwork, other' },
+          { name: 'Room details', param: 'details', value: 'yhteistyötila', note: 'Filter by room details (e.g., "yhteistyötila")' }
+
+        ]
+      },
+      {
+        title: 'Time & Date',
+        params: [
+          { name: 'Specific date', param: 'specificdate', value: '2025-01-13' },
+          { name: 'Translation interval', param: 'translationInterval', value: '15000', note: 'Default: 15000ms' },
+          { name: 'Update interval', param: 'updateInterval', value: '300000', note: 'Default: 300000ms' }
+        ]
+      },
+      {
+        title: 'Scroll Settings',
+        params: [
+          { name: 'Auto-scroll', param: 'autoScroll', value: 'true', options: [ 'true', 'false' ], note: 'IMPORTANT: Ensure your digital signage system has enough display time to completely scroll through all rooms' },
+          { name: 'Scroll speed', param: 'scrollSpeed', value: '1', note: 'Default: 1 pixel per interval' },
+          { name: 'Scroll interval', param: 'scrollInterval', value: '50', note: 'Default: 50ms' },
+          { name: 'Scroll pause', param: 'scrollPause', value: '1000', note: 'Default: 1000ms at ends' }
+        ]
+      }
+    ];
+
+    // Function to copy text to clipboard
+    function copyToClipboard ( elementId ) {
+      const text = document.getElementById( elementId ).innerText;
+      navigator.clipboard.writeText( text ).then( () => {
+        alert( 'URL copied to clipboard!' );
+      } );
+    }
+
+    // Function to open the demo URL
+    function openDemoUrl ( elementId ) {
+      const url = document.getElementById( elementId ).innerText;
+      window.open( url, '_blank' );
+    }
+
+    // Generate the URL builder interface
+    function generateUrlBuilder () {
+      const container = document.getElementById( 'parameterBuilder' );
+
+      // Clear existing content
+      container.innerHTML = '';
+
+      // Create parameters UI
+      parameterGroups.forEach( group => {
+        const groupDiv = document.createElement( 'div' );
+        groupDiv.className = 'border-b pb-2 mb-2';
+
+        const groupTitle = document.createElement( 'h4' );
+        groupTitle.className = 'font-heading font-medium text-metropoliaMainOrange mb-2';
+        groupTitle.textContent = group.title;
+        groupDiv.appendChild( groupTitle );
+
+        group.params.forEach( param => {
+          const paramDiv = document.createElement( 'div' );
+          paramDiv.className = 'flex items-center mb-1';
+
+          // Create checkbox
+          const checkbox = document.createElement( 'input' );
+          checkbox.type = 'checkbox';
+          checkbox.id = `check-${ param.param }`;
+          checkbox.className = 'mr-2';
+          checkbox.addEventListener( 'change', updateUrl );
+
+          // Create label
+          const label = document.createElement( 'label' );
+          label.htmlFor = `check-${ param.param }`;
+          label.className = 'mr-2 text-sm w-1/3';
+          label.textContent = param.name;
+
+          // Create input/select
+          let input;
+          if ( param.options ) {
+            input = document.createElement( 'select' );
+            param.options.forEach( option => {
+              const optionEl = document.createElement( 'option' );
+              optionEl.value = option;
+              optionEl.textContent = option;
+              if ( option === param.value ) {
+                optionEl.selected = true;
+              }
+              input.appendChild( optionEl );
+            } );
+          } else {
+            input = document.createElement( 'input' );
+            input.type = 'text';
+            input.value = param.value;
+          }
+
+          input.id = `param-${ param.param }`;
+          input.className = 'p-1 border rounded text-sm flex-1';
+          input.addEventListener( 'change', updateUrl );
+
+          paramDiv.appendChild( checkbox );
+          paramDiv.appendChild( label );
+          paramDiv.appendChild( input );
+
+          groupDiv.appendChild( paramDiv );
+        } );
+
+        container.appendChild( groupDiv );
+      } );
+
+      // Add "Select All" and "Clear All" buttons
+      const buttonsDiv = document.createElement( 'div' );
+      buttonsDiv.className = 'flex justify-between mt-3';
+
+      const selectAllBtn = document.createElement( 'button' );
+      selectAllBtn.className = 'bg-metropoliaMainGrey text-white px-3 py-1 rounded text-sm';
+      selectAllBtn.textContent = 'Select All';
+      selectAllBtn.addEventListener( 'click', () => {
+        document.querySelectorAll( '#parameterBuilder input[type="checkbox"]' ).forEach( cb => {
+          cb.checked = true;
+        } );
+        updateUrl();
+      } );
+
+      const clearAllBtn = document.createElement( 'button' );
+      clearAllBtn.className = 'bg-metropoliaMainGrey text-white px-3 py-1 rounded text-sm';
+      clearAllBtn.textContent = 'Clear All';
+      clearAllBtn.addEventListener( 'click', () => {
+        document.querySelectorAll( '#parameterBuilder input[type="checkbox"]' ).forEach( cb => {
+          cb.checked = false;
+        } );
+        updateUrl();
+      } );
+
+      buttonsDiv.appendChild( selectAllBtn );
+      buttonsDiv.appendChild( clearAllBtn );
+      container.appendChild( buttonsDiv );
+    }
+
+    // Update the generated URL based on selected parameters
+    function updateUrl () {
+      const baseUrl = document.getElementById( 'baseUrl' ).value;
+      const params = [];
+
+      // Collect all parameter groups and their params
+      parameterGroups.forEach( group => {
+        group.params.forEach( param => {
+          const checkbox = document.getElementById( `check-${ param.param }` );
+          if ( checkbox.checked ) {
+            const inputEl = document.getElementById( `param-${ param.param }` );
+            params.push( `${ param.param }=${ inputEl.value }` );
+          }
+        } );
+      } );
+
+      // Generate URL
+      let url = baseUrl;
+      if ( params.length > 0 ) {
+        url += '?' + params.join( '&' );
+      }
+
+      document.getElementById( 'generatedUrl' ).innerText = url;
+    }
+
+    // Initialize the URL builder
+    window.onload = function() {
+      generateUrlBuilder();
+    };
+  </script>
+</body>
+
+</html>

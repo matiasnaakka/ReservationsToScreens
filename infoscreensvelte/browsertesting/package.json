@@ -1,0 +1,22 @@
+{
+  "name": "browsertesting",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:chrome": "npx playwright test --headed --browser=chromium",
+    "test:firefox": "npx playwright test --headed --browser=firefox",
+    "test:safari": "npx playwright test --headed --browser=webkit",
+    "test:chrome-firefox": "npx playwright test --headed --browser=chromium --browser=firefox",
+    "test:chrome-safari": "npx playwright test --headed --browser=chromium --browser=webkit",
+    "test:firefox-safari": "npx playwright test --headed --browser=firefox --browser=webkit",
+    "test:all": "npx playwright test --headed --browser=chromium --browser=firefox --browser=webkit "
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.50.1"
+  }
+}

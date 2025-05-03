@@ -274,6 +274,8 @@ const groupDetailsMappings = {
     'Tarkkaamo',
   ],
 };
+
+// Route to fetch filtered rooms with reservations
 app.get('/api/rooms/freespace', async (req, res) => {
   if (req.headers.apikey !== apiKey) {
     logger.warn('Unauthorized access attempt', {ip: req.ip, path: req.path});
@@ -532,6 +534,8 @@ app.get('/api/rooms/freespace', async (req, res) => {
   }
 });
 
+// Route to fetch filtered rooms with reservations (full version)
+// This route is similar to the previous one but includes additional details and logic
 app.get('/api/rooms/freespace-full', async (req, res) => {
   if (req.headers.apikey !== apiKey) {
     logger.warn('Unauthorized access attempt', {ip: req.ip, path: req.path});

@@ -13,7 +13,9 @@
     "pm2:restart": "pm2 restart ecosystem.config.js",
     "pm2:production": "pm2 start ecosystem.config.js --env production",
     "pm2:linux:start": "pm2 start ecosystem.config.js --env production && pm2 save",
-    "pm2:linux:restart": "git pull && pm2 delete infoscreenopendataapi && pm2 start ecosystem.config.js --env production && pm2 save"
+    "pm2:linux:restart": "git pull && pm2 delete infoscreenopendataapi && pm2 start ecosystem.config.js --env production && pm2 save",
+    "docker:build": "docker build -t infoscreen-app .",
+    "docker:run": "docker run -p 3000:3000 infoscreen-app"
   },
   "author": "",
   "license": "ISC",

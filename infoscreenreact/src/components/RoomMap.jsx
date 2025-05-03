@@ -5,6 +5,31 @@ import Floor6SVG from "../assets/6thfloormap.svg";
 import Floor5SVG from "../assets/5thfloormap.svg";
 import { isRoomReserved } from "./RoomList";
 
+/**
+ * RoomMap component renders an interactive SVG map of a floor with room color coding
+ * based on reservation status and filter criteria.
+ *
+ * @component
+ * @param {Object[]} rooms - Array of room objects containing room details.
+ * @param {string} rooms[].roomNumber - The unique identifier for the room.
+ * @param {string} rooms[].reservableStudents - Indicates if the room is reservable by students ("true" or "false").
+ * @param {string} rooms[].reservableStaff - Indicates if the room is reservable by staff ("true" or "false").
+ * @param {string} selectedFloor - The currently selected floor ("5", "6", or "7").
+ * @param {string} reservableFilter - Filter criteria for reservable rooms ("staff", "students", or undefined).
+ *
+ * @returns {JSX.Element} The rendered RoomMap component.
+ *
+ * @example
+ * <RoomMap
+ *   rooms={[
+ *     { roomNumber: "KMC550", reservableStudents: "true", reservableStaff: "false" },
+ *     { roomNumber: "KMC590", reservableStudents: "false", reservableStaff: "true" },
+ *   ]}
+ *   selectedFloor="5"
+ *   reservableFilter="students"
+ * />
+ */
+
 const RoomMap = ({ rooms, selectedFloor, reservableFilter }) => {
   const svgRef = useRef(null);
   const [svgLoaded, setSvgLoaded] = useState(false);

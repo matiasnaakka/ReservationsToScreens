@@ -1,3 +1,57 @@
+/**
+ * The main application component for the Realtime Reservations system.
+ * It handles the display of room availability, maps, and instructions,
+ * as well as managing various states and URL parameters for filtering and looping modes.
+ *
+ * @component
+ *
+ * @returns {JSX.Element} The rendered App component.
+ *
+ * @description
+ * - Fetches room data and reservations from the API.
+ * - Supports filtering by floor, reservable audience (students/staff), and other criteria.
+ * - Includes a looping mode for automatic screen transitions.
+ * - Dynamically updates the URL parameters based on user interactions.
+ * - Provides multi-language support (English and Finnish).
+ * - Automatically refreshes room data and reservations at regular intervals.
+ * - Handles error states and displays appropriate messages.
+ * - Supports lazy loading for components like RoomList, RoomMap, and Instructions.
+ *
+ * @state {string} error - Error message to display if something goes wrong.
+ * @state {string} currentScreen - The current screen being displayed (e.g., "roomList" or "map").
+ * @state {boolean} autoScroll - Whether auto-scroll is enabled, based on URL parameters.
+ * @state {boolean} loopMode - Whether the application is in looping mode, based on URL parameters.
+ * @state {string} floorMapInLoop - The floor map to display during looping mode.
+ * @state {boolean} reservableStudents - Whether to filter rooms reservable for students.
+ * @state {boolean} reservableStaff - Whether to filter rooms reservable for staff.
+ * @state {string} selectedFloor - The currently selected floor for filtering rooms.
+ * @state {string} reservableFilter - The current reservable filter from URL parameters.
+ * @state {Array} rooms - The list of all rooms fetched from the API.
+ * @state {Array} filteredRooms - The list of rooms filtered based on user criteria.
+ * @state {boolean} loading - Whether room data is currently being loaded.
+ * @state {boolean} showMap - Whether the map view is currently displayed.
+ * @state {boolean} showInstructions - Whether the instructions are currently displayed.
+ * @state {string} language - The current language ("en" or "fi").
+ * @state {boolean} showFullScreenMap - Whether the full-screen map is displayed in looping mode.
+ * @state {string} nextScreen - The name of the next screen in looping mode.
+ * @state {number} timeLeft - The countdown timer for the next screen transition in looping mode.
+ * @state {Array} roomDetails - Cached details of rooms.
+ * @state {Array} roomReservations - Cached reservations for rooms.
+ * @state {boolean} isLargeCountdown - Whether the countdown timer is displayed in large mode.
+ *
+ * @effect Updates the URL parameters when filtering criteria change.
+ * @effect Fetches room data and reservations when the component mounts or criteria change.
+ * @effect Automatically switches the language every 20 seconds.
+ * @effect Manages the looping mode for automatic screen transitions.
+ * @effect Handles window resize events to adjust the countdown display.
+ * @effect Displays error messages temporarily and clears them after 5 seconds.
+ *
+ * @dependencies
+ * - React hooks: useState, useEffect, lazy, Suspense, useRef
+ * - React Router hooks: useSearchParams, useNavigate
+ * - API functions: fetchAllRooms
+ * - Components: RoomList, RoomMap, Instructions
+ */
 import React, { useState, useEffect, lazy, Suspense, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
@@ -11,6 +65,8 @@ const getInitialScreen = () => {
   const stored = sessionStorage.getItem("currentLoopScreen");
   return stored || "roomList";
 };
+
+
 
 const App = () => {
   const [error, setError] = useState(null);

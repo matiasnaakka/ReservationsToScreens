@@ -59,14 +59,21 @@ export const isRoomReserved = (room) => {
   return false; // Huone on vapaa
 };
 
-import { format, parseISO } from "date-fns";
-import { fi } from "date-fns/locale"; // Suomen kielinen muotoilu
-
-// Helper function to format closing time
-const formatClosingTime = (closingTime) => {
-  if (!closingTime) return "Unknown";
-  return format(parseISO(closingTime), "HH:mm", { locale: fi });
-};
+/**
+ * RoomList component displays a list of rooms with their details, availability, and QR codes.
+ *
+ * @component
+ * @param {Object} props - The properties passed to the component.
+ * @param {Array} props.rooms - Array of room objects containing details about each room.
+ * @param {string} props.language - The language to display the room details ("fi" for Finnish, "en" for English).
+ * @param {boolean} props.autoScroll - Whether the room list should auto-scroll.
+ * @param {boolean} props.reservableStudents - Whether to filter rooms reservable by students.
+ * @param {boolean} props.reservableStaff - Whether to filter rooms reservable by staff.
+ * @param {boolean} props.showMap - Whether to display the map view.
+ * @param {boolean} props.isLargeView - Whether to display the large view layout.
+ *
+ * @returns {JSX.Element} A scrollable grid of room cards with details and QR codes.
+ */
 
 const RoomList = ({ rooms, language, autoScroll, reservableStudents, reservableStaff, showMap, isLargeView }) => {
 

@@ -12,3 +12,4 @@
 - use SOLID principles
 - use DRY (Don't Repeat Yourself) principles
 - use meaningful variable names
+- use jsdoc comments to functions and classes

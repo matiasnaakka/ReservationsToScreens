@@ -25,6 +25,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "firebase-admin": "^13.0.2",
+    "mongoose": "^8.14.1",
     "node-fetch": "^3.3.2",
     "nodemon": "^3.1.9"
   },

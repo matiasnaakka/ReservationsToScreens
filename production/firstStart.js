@@ -5,17 +5,17 @@ import BusinessHours from './models/BusinessHours.js';
 import fs from 'fs';
 import path from 'path';
 
-const dataDir = path.resolve('./production/data');
+const dataDir = path.resolve('./data');
 
 async function importRooms() {
   const roomsPath = path.join(dataDir, 'rooms.json');
   const roomsRaw = fs.readFileSync(roomsPath, 'utf-8');
   const rooms = JSON.parse(roomsRaw);
   // Only insert rooms with a roomNumber (skip trailing test/empty objects)
-  const filteredRooms = rooms.filter(r => r.roomNumber);
+
   await Room.deleteMany({});
-  await Room.insertMany(filteredRooms);
-  console.log(`Imported ${filteredRooms.length} rooms.`);
+  await Room.insertMany(rooms);
+  console.log(`Imported ${rooms.length} rooms.`);
 }
 
 async function importBusinessHours() {

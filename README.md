@@ -68,7 +68,7 @@ To set up and run the project, ensure you have the following:
 
 ## Contributors
 
-- Aleksi Nokelainen
-- Matias Naakka
+- [Aleksi Nokelainen](https://github.com/Krugou)
+- [Matias Naakka](https://github.com/matiasnaakka)
 
 For detailed setup instructions and usage guidelines, refer to the individual README files linked above.

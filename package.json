@@ -1,0 +1,17 @@
+{
+  "name": "reservations-to-screens",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Root package for managing all ReservationsToScreens subprojects",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:infoscreen-react\" \"npm run dev:infoscreen-svelte\"",
+    "dev:backend": "cd backend-api && npm install && npm run dev",
+    "dev:frontend": "cd RoomManagementFrontend && npm install && npm run dev",
+    "dev:infoscreen-react": "cd infoscreenreact && npm install && npm run dev",
+    "dev:infoscreen-svelte": "cd infoscreensvelte && npm install && npm run dev",
+    "install:all": "concurrently \"npm i\" \"cd backend-api && npm i\" \"cd RoomManagementFrontend && npm i\" \"cd infoscreenreact && npm i\" \"cd infoscreensvelte && npm i\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

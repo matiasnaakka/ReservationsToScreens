@@ -1,8 +1,8 @@
-# 🏫Reservable rooms at the campus
+# 🏫Realtime room reservations
 
 ## Project Overview
 
-Reservable rooms at the school campus is a collaboration project made by Aleksi Nokelainen and Matias Naakka. It's designed to manage and display room reservations at Metropolia Karaportti campus. It consists of multiple components, including backend services and frontend applications, to provide real-time room availability and reservation details. The system integrates with Metropolia's Open Data API and Firebase Firestore to fetch and manage data.
+Realtime room reservations is a collaboration project made by Aleksi Nokelainen and Matias Naakka. It's designed to manage and display room reservations at Metropolia Karaportti campus. It consists of multiple components, including backend services and frontend applications, to provide real-time room availability and reservation details. The system integrates with Metropolia's Open Data API and Firebase Firestore to fetch and manage data.
 
 ### Key Features
 - Real-time room availability and reservation updates.
@@ -30,7 +30,7 @@ The project is structured into four main components:
 3. **InfoScreenReact**:
    - A React-based web application for displaying room reservations.
    - Includes features like QR code integration and room filtering.
-   - Designed for both large displays and smaller devices.
+   - Designed for both large displays
 
 4. **RoomManagementFrontend**:
    - A React-based web application for managing room and campus data.

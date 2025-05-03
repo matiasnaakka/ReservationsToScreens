@@ -1,4 +1,4 @@
-#Reservable campus spaces Project
+# Reservable rooms at the campus
 
 ## Project Overview
 

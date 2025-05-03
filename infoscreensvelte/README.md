@@ -1,165 +1,100 @@
-# create-svelte
+# InfoScreen - Interactive Room Management System
 
-Everything you need to build a Svelte library, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+InfoScreen is a modern, interactive room management and visualization system built with SvelteKit. It provides real-time room availability information and interactive floor plans for large facilities.
 
-Read more about creating a library [in the docs](https://svelte.dev/docs/kit/packaging).
+## Overview
 
-## Creating a project
+InfoScreen is designed to help users navigate and manage room reservations in large buildings efficiently. Built with SvelteKit and TypeScript, it offers a responsive and intuitive interface for viewing room availability, making reservations, and visualizing floor plans.
 
-If you're seeing this, you've probably already done this step. Congrats!
+### Technology Stack
+
+- **Frontend Framework**: SvelteKit
+- **Language**: TypeScript
+- **Styling**: TailwindCSS
+- **Testing**: Playwright & Vitest
+- **API**: Express.js
+- **Visualization**: Three.js for 3D floor plans
+
+### Core Features
+
+- **Real-time Updates**: Live room availability status
+- **Interactive Maps**: Dynamic floor plan visualization
+- **Multi-building Support**: Manage multiple buildings and floors
+- **Responsive Design**: Works on various screen sizes
+- **Automated Testing**: Comprehensive test suite with Playwright
+
+## Installation
 
 ```bash
-# create a new project in the current directory
-npx sv create
+# Clone the repository
+git clone [repository-url]
 
-# create a new project in my-app
-npx sv create my-app
-```
+# Install dependencies
+npm install
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
+# Start development server
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
+# InfoScreen Project Structure
 
-## Building
+## Source Code Structure (`/src`)
 
-To build your library:
+### Components (`/src/components`)
 
-```bash
-npm run package
-```
+- `Header/` - Header components for navigation and title display
+  - `Header.svelte` - Main header component
+  - `Navigation.svelte` - Navigation menu component
+- `Map/` - Map visualization components
+  - `MapView.svelte` - Main map component
+  - `FloorPlan.svelte` - Floor plan visualization
+  - `RoomMarker.svelte` - Room markers on map
+- `Reservations/` - Reservation related components
+  - `ReservationList.svelte` - List of room reservations
+  - `ReservationCard.svelte` - Individual reservation display
 
-To create a production version of your showcase app:
+### Routes (`/src/routes`)
 
-```bash
-npm run build
-```
+- `+page.svelte` - Main page component
+- `+layout.svelte` - Root layout component
+- `rooms/` - Room-related routes
+  - `+page.svelte` - Rooms overview
+  - `[id]/+page.svelte` - Individual room view
 
-You can preview the production build with `npm run preview`.
+### Stores (`/src/stores`)
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+- `wallsStore.ts` - Wall coordinates and floor plan data
+- `activityStore.ts` - User activity tracking
+- `reservationStore.ts` - Reservation management
+- `roomStore.ts` - Room data management
 
-## Publishing
+### Lib (`/src/lib`)
 
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
+- `utils/` - Utility functions
+  - `api.ts` - API communication helpers
+  - `dateUtils.ts` - Date manipulation functions
+  - `mapUtils.ts` - Map calculation utilities
+- `types/` - TypeScript type definitions
+  - `Room.ts` - Room-related types
+  - `Reservation.ts` - Reservation-related types
+  - `Map.ts` - Map-related types
 
-To publish your library to [npm](https://www.npmjs.com):
+### Static (`/src/static`)
 
-```bash
-npm publish
-```
+- `images/` - Image assets
+- `icons/` - Icon assets
+- `styles/` - Global styles
 
-## Project Structure
+### API (`/src/api`)
 
-The project is organized as follows:
+- `coordsApi.js` - Wall coordinates API endpoints
+- `roomsApi.js` - Room management API endpoints
+- `reservationsApi.js` - Reservation handling endpoints
 
-- `src/`: Contains the source code for the project.
-  - `components/`: Contains Svelte components.
-  - `stores/`: Contains Svelte stores for state management.
-  - `config/`: Contains configuration files.
-  - `hooks/`: Contains custom hooks.
-  - `utils/`: Contains utility functions.
-  - `types/`: Contains TypeScript type definitions.
-  - `routes/`: Contains SvelteKit routes.
-  - `data/`: Contains static data files.
-  - `static/`: Contains static assets.
+## Key Features
 
-## Components
-
-### Header.svelte
-
-The `Header` component is responsible for displaying the header of the application.
-
-#### Props
-
-- `startDate` (string): The start date for the header.
-- `showReservationsParam` (boolean): Whether to show reservations.
-- `floorParam` (string | null): The floor parameter.
-- `buildingParam` (string | null): The building parameter.
-- `roomsLoaded` (boolean): Whether the rooms are loaded.
-- `reservableTypeParam` ('all' | 'staff' | 'students'): The type of reservable rooms.
-- `intervalParam` (number): The interval parameter.
-
-### Main.svelte
-
-The `Main` component is responsible for displaying the main content of the application.
-
-#### Props
-
-- `isActive` (boolean): Whether the main content is active.
-- `INACTIVITY_TIMEOUT` (number): The inactivity timeout.
-
-## Stores
-
-### activityStore.ts
-
-The `activityStore` is responsible for managing the activity state of the application.
-
-### freeSpaceStore.ts
-
-The `freeSpaceStore` is responsible for managing the free space data of the application.
-
-## API Configuration
-
-### api.config.ts
-
-The `api.config.ts` file contains the configuration for the API.
-
-## Usage Examples
-
-### Header Component
-
-```svelte
-<script>
-  import Header from './components/Header.svelte';
-
-  let startDate = '2023-01-01';
-  let showReservationsParam = true;
-  let floorParam = '5';
-  let buildingParam = 'KM';
-  let roomsLoaded = true;
-  let reservableTypeParam = 'all';
-  let intervalParam = 300000;
-</script>
-
-<Header
-  {startDate}
-  {showReservationsParam}
-  {floorParam}
-  {buildingParam}
-  {roomsLoaded}
-  {reservableTypeParam}
-  {intervalParam}
-/>
-```
-
-### Main Component
-
-```svelte
-<script>
-  import Main from './components/Main.svelte';
-  import { isActive, INACTIVITY_TIMEOUT } from './stores/activityStore.js';
-</script>
-
-<Main {isActive} {INACTIVITY_TIMEOUT} />
-```
-
-## Edge Cases
-
-### Header Component
-
-- If `floorParam` or `buildingParam` is null, the corresponding information will not be displayed.
-- If `roomsLoaded` is false, the header will not be displayed.
-
-### Main Component
-
-- If `isActive` is false, the main content will not be displayed.
-- If `INACTIVITY_TIMEOUT` is not set, the default value will be used.
+- Interactive floor plan visualization
+- Real-time room reservation status
+- Multi-floor navigation
+- Room availability tracking
+- User activity monitoring

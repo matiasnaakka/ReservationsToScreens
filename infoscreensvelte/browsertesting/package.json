@@ -1,7 +1,7 @@
 {
   "name": "browsertesting",
   "version": "1.0.0",
-  "description": "",
+  "description": "Browser testing configuration for InfoScreen using Playwright to run automated tests across Chrome, Firefox, and Safari",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

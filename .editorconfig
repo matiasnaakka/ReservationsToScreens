@@ -1,0 +1,60 @@
+# EditorConfig helps developers define and maintain consistent coding styles between different editors and IDEs
+
+# Top-most EditorConfig file
+root = true
+
+# Default settings for all files
+[*]
+charset = utf-8
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true
+max_line_length = 80
+
+# Web development files
+[*.{js,jsx,ts,tsx}]
+indent_style = space
+indent_size = 2
+quote_type = single
+curly_bracket_next_line = false
+spaces_around_operators = true
+spaces_around_brackets = false
+
+# TypeScript specific
+[*.{ts,tsx}]
+indent_style = space
+indent_size = 2
+quote_type = single
+spaces_around_operators = true
+spaces_around_brackets = false
+block_comment_start = /*
+block_comment_end = */
+max_line_length = 80
+insert_final_newline = true
+trim_trailing_whitespace = true
+curly_bracket_next_line = false
+continuation_indent_size = 2
+spaces_within_object_literal_braces = false
+spaces_within_array_bracket = false
+indent_brace_style = K&R
+spaces_around_operators = true
+
+# Backend files
+[*.{py,java}]
+indent_style = space
+indent_size = 4
+
+# Configuration files
+[*.{json,yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Markdown files
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# Package files
+[package.json]
+indent_style = space
+indent_size = 2

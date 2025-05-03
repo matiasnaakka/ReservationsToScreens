@@ -1,7 +1,7 @@
 import express from 'express';
 import openData from '../utils/opendata.js';
 import logger from '../utils/logger.js';
-import {db} from '../utils/firebase.js';
+import Room from '../models/Room.js';
 import {
   getUtcNow,
   finlandTimezoneOffset,
@@ -9,7 +9,8 @@ import {
   utcToFinland,
   finnishToUtc,
 } from '../utils/timezone.js';
-import {floorColorCodes, groupDetailsMappings} from '../utils/constants.js';
+
+import BusinessHours from '../models/BusinessHours.js';
 
 const router = express.Router();
 
@@ -21,11 +22,14 @@ export default (apiKey) => {
       return res.status(401).json({message: 'Unauthorized'});
     }
     try {
-      const roomsDoc = await db.collection('MetropoliaData').doc('rooms').get();
-      if (roomsDoc.exists) {
-        res.json(roomsDoc.data().rooms || {});
-      } else {
+      const allRoomsArr = await Room.find({});
+      if (!allRoomsArr.length) {
         res.status(404).json({message: 'Rooms data not found'});
+      } else {
+        // Convert array to object keyed by roomNumber for compatibility
+        const allRooms = {};
+        allRoomsArr.forEach(room => { allRooms[room.roomNumber] = room.toObject(); });
+        res.json(allRooms);
       }
     } catch (error) {
       logger.error('Error fetching rooms data', {error: error.message});
@@ -47,12 +51,11 @@ export default (apiKey) => {
         startDate,
         endDate,
       });
-      const roomsDoc = await db.collection('MetropoliaData').doc('rooms').get();
-      if (!roomsDoc.exists) {
+      const allRoomsArr = await Room.find({});
+      if (!allRoomsArr.length) {
         return res.status(404).json({message: 'Rooms data not found'});
       }
-      const allRooms = roomsDoc.data().rooms || {};
-      const filteredRooms = Object.values(allRooms).filter((room) => {
+      const filteredRooms = allRoomsArr.filter((room) => {
         const matchesFloor = floor === 'All Floors' || room.floor === floor;
         const matchesStaff =
           Staffworkspace === 'true'
@@ -69,7 +72,7 @@ export default (apiKey) => {
             endDate,
           );
           return {
-            ...room,
+            ...room.toObject(),
             reserved: reservations.reservations.length > 0,
             reservationDetails: reservations.reservations[0] || null,
           };

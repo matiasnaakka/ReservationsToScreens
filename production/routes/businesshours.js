@@ -1,6 +1,7 @@
+
 import express from 'express';
 import logger from '../utils/logger.js';
-import {db} from '../utils/firebase.js';
+import BusinessHours from '../models/BusinessHours.js';
 
 const router = express.Router();
 
@@ -11,14 +12,11 @@ export default (apiKey) => {
       return res.status(401).json({message: 'Unauthorized'});
     }
     try {
-      const businessHoursDoc = await db
-        .collection('MetropoliaData')
-        .doc('businesshours')
-        .get();
-      if (businessHoursDoc.exists) {
-        res.json(businessHoursDoc.data() || {campuses: []});
+      const businessHoursDoc = await BusinessHours.findOne({});
+      if (businessHoursDoc) {
+        res.json(businessHoursDoc.toObject() || { campuses: [] });
       } else {
-        res.status(404).json({message: 'Business hours data not found'});
+        res.status(404).json({ message: 'Business hours data not found' });
       }
     } catch (error) {
       logger.error('Error fetching business hours data', {

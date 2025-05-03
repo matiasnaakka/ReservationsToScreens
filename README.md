@@ -43,7 +43,7 @@ The project is structured into four main components:
 
 To set up and run the project, ensure you have the following:
 
-- **Node.js** (v16 or higher): Required for running the development servers and building the applications.
+- **Node.js** (v21.0.0 or higher): Required for running the development servers and building the applications.
 - **npm or yarn**: For managing dependencies.
 - **Firebase Project**: To store room and business hours data.
 - **Metropolia Open Data API Key**: For accessing room reservation data.
@@ -59,6 +59,12 @@ To set up and run the project, ensure you have the following:
 - [RoomManagementFrontend Documentation](./RoomManagementFrontend/README.md)
 
 ---
+
+## Links to Component Documentation
+
+- [Metropolia Open Data Documentation (wiki.metropolia.fi)](https://wiki.metropolia.fi/display/opendata/Varaukset)
+
+--
 
 ## Contributors
 

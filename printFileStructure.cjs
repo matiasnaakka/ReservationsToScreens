@@ -2,13 +2,10 @@ const fs = require('fs');
 const path = require('path');
 const {createCanvas} = require('canvas');
 
-// Define output location in the static folder
-const outputFile = path.join('static', 'fileStructure.png');
+// Define output location in the current folder
+const outputFile = path.join('./', 'fileStructure.png');
 
-// Ensure the static directory exists
-if (!fs.existsSync('static')) {
-  fs.mkdirSync('static', {recursive: true});
-}
+
 
 // Function to recursively traverse the directory structure and collect items
 const collectStructure = (dir, level = 0, result = []) => {

@@ -62,9 +62,7 @@ To set up and run the project, ensure you have the following:
 
 ## Metropolia Open data documentation
 
-- [Metropolia Open Data Documentation (wiki.metropolia.fi)](https://wiki.metropolia.fi/display/opendata/Varaukset)
-
---
+-- [Metropolia Open Data Documentation (wiki.metropolia.fi)](https://wiki.metropolia.fi/display/opendata/Varaukset)
 
 ## Contributors
 

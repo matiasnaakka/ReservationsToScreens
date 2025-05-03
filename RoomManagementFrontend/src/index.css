@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+
+@tailwind utilities;
+
+/* Example CSS */
+.img-rounded {
+    border-radius: 8px;
+    object-fit: cover;
+  }
+  

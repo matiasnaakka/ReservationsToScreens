@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.dynamic-padding {
+  padding: clamp(0.5rem, 2vw, 1rem);
+}
+
+@media (orientation: portrait) {
+  .h-screen {
+    flex-direction: column;
+  }
+}
+
+.grid {
+  display: grid;
+}
+
+.grid-template-rows {
+  grid-template-rows: repeat(auto-fill, minmax(100px, 1fr));
+}
+
+.grid-template-columns {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.qr-code {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.room-card {
+  padding: 0.75rem;
+  /* Increased padding */
+  font-size: 1rem;
+  /* Larger font size */
+  border-radius: 8px;
+  /* More rounded corners */
+}
+
+.room-card p {
+  margin: 0.5rem 0;
+  /* Slightly more spacing */
+}
+
+.room-card {
+  overflow: hidden;
+  /* Estetään ylivuoto */
+}
+
+
+.room-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 1660px) {
+  .room-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1659px) and (min-width: 1338px) {
+  .room-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1337px) and (min-width: 1000px) {
+  .room-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 999px) and (min-width: 700px) {
+  .room-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 699px) {
+  .room-grid {
+    grid-template-columns: 1fr;
+  }
+}

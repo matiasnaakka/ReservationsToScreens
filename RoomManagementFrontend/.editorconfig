@@ -1,0 +1,48 @@
+# EditorConfig helps developers define and maintain consistent coding styles between different editors and IDEs
+
+# Top-most EditorConfig file
+root = true
+
+# Set default charset to UTF-8
+[*]
+charset = utf-8
+
+# Indentation settings
+[*.js]
+indent_style = space
+indent_size = 2
+
+[*.py]
+indent_style = space
+indent_size = 4
+
+[*.java]
+indent_style = tab
+indent_size = 4
+
+# End of line settings
+[*.{js,py,java}]
+end_of_line = lf
+
+# Trim trailing whitespaces
+[*.{js,py,java}]
+trim_trailing_whitespace = true
+
+# Ensure a newline at the end of the file
+[*.{js,py,java}]
+insert_final_newline = true
+# This EditorConfig file specifies the indentation style and size for JSX and TSX files.
+# It also sets the end of line character, trims trailing whitespace, and inserts a final newline.
+
+[*.jsx]
+indent_style = space
+indent_size = 2
+
+[*.tsx]
+indent_style = space
+indent_size = 2
+
+[*.{jsx,tsx}]
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true

@@ -1,4 +1,4 @@
-# Realtime Reservations Project
+#Reservable campus spaces Project
 
 ## Project Overview
 

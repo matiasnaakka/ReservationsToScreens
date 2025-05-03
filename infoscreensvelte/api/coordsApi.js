@@ -9,6 +9,11 @@ const STORE_PATH = join(__dirname, '../src/stores/wallsStore.ts');
 
 const router = Router();
 
+/**
+ * Logs request details with a custom message
+ * @param {express.Request} req - The Express request object
+ * @param {string} message - Custom message to log
+ */
 const logRequest = (req, message) => {
   console.log(
     `[${new Date().toISOString()}] ${req.method} ${req.path} - ${message}`,
@@ -20,6 +25,12 @@ const logRequest = (req, message) => {
   );
 };
 
+/**
+ * Logs error details with request information
+ * @param {express.Request} req - The Express request object
+ * @param {Error} error - The error object
+ * @param {string} message - Custom error message
+ */
 const logError = (req, error, message) => {
   console.error(
     `[${new Date().toISOString()}] ${req.method} ${req.path} - ${message}`,
@@ -33,6 +44,11 @@ const logError = (req, error, message) => {
   );
 };
 
+/**
+ * Parses the existing walls data from the store file
+ * @returns {Promise<Array<BuildingFloorWalls>>} Array of wall configurations
+ * @throws {Error} When file reading or parsing fails
+ */
 const parseExistingWalls = async () => {
   try {
     const content = await fs.readFile(STORE_PATH, 'utf-8');
@@ -50,6 +66,18 @@ const parseExistingWalls = async () => {
   }
 };
 
+/**
+ * Updates the walls data in the store file.
+ *
+ * @async
+ * @function updateWallsStore
+ * @param {Array} walls - The array of walls data to be stored
+ * @returns {Promise<boolean>} Returns true if the update was successful, false otherwise
+ * @description This function reads the store file, replaces the defaultWalls array with the new walls data
+ * after formatting it nicely, and then writes the updated content back to the file.
+ * The formatting includes removing extra whitespace in arrays and adjusting quotes for specific properties.
+ * @throws {Error} Logs the error to console if file reading or writing fails
+ */
 const updateWallsStore = async (walls) => {
   try {
     const content = await fs.readFile(STORE_PATH, 'utf-8');
@@ -74,7 +102,15 @@ const updateWallsStore = async (walls) => {
   }
 };
 
-// POST endpoint to add new wall coordinates
+/**
+ * POST endpoint to add new wall coordinates
+ * @route POST /walls
+ * @param {Object} req.body.building - Building identifier
+ * @param {Object} req.body.floor - Floor number
+ * @param {Object} req.body.start - Start coordinates {x, y}
+ * @param {Object} req.body.end - End coordinates {x, y}
+ * @returns {Object} Message indicating success or error
+ */
 router.post('/walls', async (req, res) => {
   try {
     const {building, floor, start, end} = req.body;
@@ -115,7 +151,11 @@ router.post('/walls', async (req, res) => {
   }
 });
 
-// GET endpoint to fetch all walls
+/**
+ * GET endpoint to fetch all walls
+ * @route GET /walls
+ * @returns {Array<BuildingFloorWalls>} Array of all wall configurations
+ */
 router.get('/walls', async (req, res) => {
   try {
     const walls = await parseExistingWalls();
@@ -126,7 +166,13 @@ router.get('/walls', async (req, res) => {
   }
 });
 
-// DELETE endpoint to remove last wall
+/**
+ * DELETE endpoint to remove the last wall from a specific floor
+ * @route DELETE /walls/last
+ * @param {string} req.query.building - Building identifier
+ * @param {number|string} req.query.floor - Floor number
+ * @returns {Object} Details about the removed wall and remaining count
+ */
 router.delete('/walls/last', async (req, res) => {
   try {
     const {building, floor} = req.query;

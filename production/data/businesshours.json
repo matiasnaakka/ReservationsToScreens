@@ -1,0 +1,60 @@
+{
+  "campuses": [
+    {
+      "name": "Karamalmi",
+      "shorthand": "KM",
+      "ImageUrl": "https://www.metropolia.fi/sites/default/files/images/Kampukset/karamalmin-kampus.jpg",
+      "hours": {
+        "monday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "tuesday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "wednesday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "thursday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "friday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "saturday": { "hours": null, "minutes": null, "closeHours": null, "closeMinutes": null, "isClosed": true },
+        "sunday": { "hours": null, "minutes": null, "closeHours": null, "closeMinutes": null, "isClosed": true }
+      }
+    },
+    {
+      "name": "Myllypuro",
+      "shorthand": "MP",
+      "ImageUrl": "https://www.metropolia.fi/sites/default/files/images/Kampukset/myllypuron-kampus-ilmakuva.jpg",
+      "hours": {
+        "monday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "tuesday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "wednesday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "thursday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "friday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "saturday": { "hours": 10, "minutes": 0, "closeHours": 17, "closeMinutes": 0, "isClosed": false },
+        "sunday": { "hours": null, "minutes": null, "closeHours": null, "closeMinutes": null, "isClosed": true }
+      }
+    },
+    {
+      "name": "Myyrmäki",
+      "shorthand": "MM",
+      "ImageUrl": "https://www.metropolia.fi/sites/default/files/images/Kampukset/myyrmaki-paasisaankaynti.jpg",
+      "hours": {
+        "monday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "tuesday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "wednesday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "thursday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "friday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "saturday": { "hours": null, "minutes": null, "closeHours": null, "closeMinutes": null, "isClosed": true },
+        "sunday": { "hours": null, "minutes": null, "closeHours": null, "closeMinutes": null, "isClosed": true }
+      }
+    },
+    {
+      "name": "Arabia",
+      "shorthand": "AR",
+      "ImageUrl": "https://www.metropolia.fi/sites/default/files/images/Kampukset/arabian-kampus-sisaankaynti.jpg",
+      "hours": {
+        "monday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "tuesday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "wednesday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "thursday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "friday": { "hours": 7, "minutes": 30, "closeHours": 21, "closeMinutes": 0, "isClosed": false },
+        "saturday": { "hours": null, "minutes": null, "closeHours": null, "closeMinutes": null, "isClosed": true },
+        "sunday": { "hours": null, "minutes": null, "closeHours": null, "closeMinutes": null, "isClosed": true }
+      }
+    }
+  ]
+}

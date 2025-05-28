@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { db } from '../config/firebase';
-import { doc, setDoc, deleteDoc } from 'firebase/firestore';
 
 const API_KEY = import.meta.env.VITE_APP_API_KEY;
 const API_URL = import.meta.env.VITE_APP_URL_PATH;
 
-const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess }) => {
+const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => {
   const [expandedRoom, setExpandedRoom] = useState(null);
   const [loading, setLoading] = useState(false);
   const [sortedRooms, setSortedRooms] = useState([]);
@@ -30,115 +28,111 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess }) => {
     setRooms((prevRooms) => ({
       ...prevRooms,
       [roomNumber]: {
-        ...prevRooms[roomNumber], // Preserve other fields
-        ...updatedRoom, // Only update the changed fields
+        ...prevRooms[roomNumber],
+        ...updatedRoom,
       },
     }));
   };
 
+  const validateRoomWithMetropolia = async (roomNumber) => {
+  const response = await fetch(`${API_URL}/api/rooms/validate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: API_KEY,
+    },
+    body: JSON.stringify({ roomNumber }),
+  });
 
-  // Handle adding new room
-  const handleAddRoom = async () => {
-    const newRoomNumber = prompt('Enter new room number: Example KMC201');
-    if (!newRoomNumber || newRoomNumber.trim().length < 3) {
-      setError('Please enter a valid room number.');
+  if (!response.ok) {
+    throw new Error('Room validation failed');
+  }
+
+  const { exists } = await response.json();
+  return exists;
+};
+
+
+const handleAddRoom = async () => {
+  const newRoomNumber = prompt('Enter new room number: Example KMC201');
+  if (!newRoomNumber || newRoomNumber.trim().length < 3) {
+    setError('Please enter a valid room number.');
+    return;
+  }
+
+  setError(null);
+  setSuccess(null);
+  setLoading(true);
+
+  try {
+    // ✅ Tarkista Metropolian open API:n kautta (backendin kautta)
+    const isValidRoom = await validateRoomWithMetropolia(newRoomNumber);
+    if (!isValidRoom) {
+      setError(`Room ${newRoomNumber} not found in Metropolia open API.`);
       return;
     }
 
-    setError(null);
-    setSuccess(null);
-    setLoading(true);
-
-    try {
-      const response = await fetch(`${API_URL}/api/karamalmi/rooms`, {
-        headers: { apikey: API_KEY },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        setError(`Error fetching room data: ${errorData.message || 'Unknown error'}`);
-        return;
-      }
-
-      const data = await response.json();
-
-      const roomExists = data.rooms.some(room => room.code === newRoomNumber);
-
-      if (!roomExists) {
-        setError('The entered room does not exist in the open data.');
-        return;
-      }
-
-      if (rooms[newRoomNumber]) {
-        setError('The room already exists in the local data.');
-        return;
-      }
-
-      const newRoom = {
-        roomNumber: newRoomNumber,
-        floor: '',
-        building: '',
-        wing: '',
-        persons: '0',
-        squareMeters: '0',
-        details: '',
-        reservableStudents: 'false',
-        reservableStaff: 'false',
-      };
-
-      handleRoomUpdate(newRoomNumber, newRoom);
-      await handleSaveRoom(newRoomNumber, newRoom);
-
-      setSuccess('The room has been successfully added.');
-    } catch (error) {
-      console.error('Error checking room:', error);
-      setError('An error occurred while checking the room. Please try again.');
-    } finally {
-      setLoading(false);
+    // ✅ Tarkista ettei ole jo lisätty
+    if (rooms[newRoomNumber]) {
+      setError('The room already exists in the local data.');
+      return;
     }
-  };
 
+    const newRoom = {
+      roomNumber: newRoomNumber,
+      floor: '',
+      building: '',
+      wing: '',
+      persons: '0',
+      squareMeters: '0',
+      details: '',
+      reservableStudents: 'false',
+      reservableStaff: 'false',
+    };
+
+    const response = await fetch(`${API_URL}/api/rooms/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: API_KEY,
+      },
+      body: JSON.stringify(newRoom),
+    });
+
+    if (!response.ok) {
+      const { message } = await response.json();
+      throw new Error(message || 'Failed to add room.');
+    }
+
+    const { room } = await response.json();
+    handleRoomUpdate(room.roomNumber, room);
+    setSuccess(`Room ${room.roomNumber} added successfully.`);
+  } catch (error) {
+    setError(`Error adding room: ${error.message}`);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  // Save room (API)
   const handleSaveRoom = async (roomNumber, updatedRoom) => {
     if (!updatedRoom) {
       setError('Room data is missing. Cannot save changes.');
-      console.error('Room data is undefined or null.');
       return;
     }
-
     setLoading(true);
     setError(null);
     setSuccess(null);
 
     try {
-      const roomsRef = doc(db, 'MetropoliaData', 'rooms');
-
-      // Päivitä vain tämä huone paikallisesti
-      const newRoomsState = {
-        ...rooms,
-        [roomNumber]: {
-          ...rooms[roomNumber],
-          ...updatedRoom, // Päivitä vain muuttuneet kentät
-        },
-      };
-
-      console.log('Saving room to Firestore:', newRoomsState);
-
-      // Päivitä Firestoreen
-      await setDoc(roomsRef, { rooms: newRoomsState });
-
-      // Päivitä local state
-      setRooms(newRoomsState);
-
-      setSuccess(`Room ${roomNumber} saved successfully.`);
+      await saveRoom(roomNumber, updatedRoom);
     } catch (err) {
-      console.error('Error saving room:', err);
-      setError('Error saving room to Firestore. Please try again.');
+      setError('Error saving room.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle delete room
   const handleDeleteRoom = async (roomNumber) => {
     if (window.confirm(`Are you sure you want to delete room ${roomNumber}?`)) {
       setLoading(true);
@@ -146,24 +140,26 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess }) => {
       setSuccess(null);
 
       try {
-        const roomsRef = doc(db, 'MetropoliaData', 'rooms');
+        const response = await fetch(`${API_URL}/api/rooms/delete`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: API_KEY
+          },
+          body: JSON.stringify({ roomNumber })
+        });
+
+        if (!response.ok) {
+          const { message } = await response.json();
+          throw new Error(message || 'Failed to delete room.');
+        }
+
         const updatedRooms = { ...rooms };
-
-        // Delete the specified room from the local object.
         delete updatedRooms[roomNumber];
-
-        // Update Firestore with the modified object.
-        await setDoc(roomsRef, { rooms: updatedRooms });
-
-        // Update the local state with the modified rooms object.
         setRooms(updatedRooms);
-
-        // Provide success feedback.
         setSuccess(`Room ${roomNumber} deleted successfully.`);
-        console.log(`Room ${roomNumber} deleted.`);
       } catch (err) {
-        console.error('Error deleting room:', err);
-        setError('Error deleting room. Please try again.');
+        setError(`Error deleting room: ${err.message}`);
       } finally {
         setLoading(false);
       }

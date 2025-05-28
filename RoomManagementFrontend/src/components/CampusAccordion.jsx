@@ -2,7 +2,7 @@ import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import clockIcon from '../assets/clock.png';
 
-const CampusAccordion = ({ businessHours, setBusinessHours }) => {
+const CampusAccordion = ({ businessHours, setBusinessHours, saveCampusHours }) => {
   // Handle campus updates
   const handleCampusUpdate = (index, updatedCampus) => {
     setBusinessHours(prev => ({
@@ -33,6 +33,12 @@ const CampusAccordion = ({ businessHours, setBusinessHours }) => {
       ...prev,
       campuses: [...prev.campuses, newCampus]
     }));
+  };
+
+  // Save campus hours (API)
+  const handleSaveCampusHours = async (index, campus) => {
+    if (!campus.shorthand || !campus.hours) return;
+    await saveCampusHours(campus.shorthand, campus.hours);
   };
 
   return (
@@ -70,7 +76,7 @@ const CampusAccordion = ({ businessHours, setBusinessHours }) => {
               <div className="flex items-start gap-4">
                 {/* Display Campus Image */}
                 <img
-                  src={campus.imageUrl || 'https://via.placeholder.com/150'}
+                  src={campus.ImageUrl || 'https://via.placeholder.com/150'}
                   alt={`${campus.name} campus`}
                   className="w-24 h-24 object-cover rounded shadow"
                 />
@@ -106,7 +112,7 @@ const CampusAccordion = ({ businessHours, setBusinessHours }) => {
                     <label className="text-sm text-gray-600">Image URL</label>
                     <input
                       type="text"
-                      value={campus.imageUrl || ''}
+                      value={campus.ImageUrl || ''}
                       onChange={(e) =>
                         handleCampusUpdate(index, { ...campus, imageUrl: e.target.value })
                       }
@@ -197,6 +203,15 @@ const CampusAccordion = ({ businessHours, setBusinessHours }) => {
                     )}
                   </div>
                 ))}
+              </div>
+
+              <div className="flex justify-end mt-4">
+                <button
+                  onClick={() => handleSaveCampusHours(index, campus)}
+                  className="px-4 py-2 bg-blue hover:bg-indigo-400 text-white rounded transition-colors"
+                >
+                  Save Campus Hours
+                </button>
               </div>
             </div>
           ))}

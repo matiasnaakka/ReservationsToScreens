@@ -1,13 +1,12 @@
-import { memo, useState, useEffect } from 'react';
-import { db } from '../../config/firebase';
-import { doc, getDoc, setDoc, collection } from 'firebase/firestore';
-import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { memo, useState, useEffect, useCallback } from 'react';
 import RoomsAccordion from '../../components/RoomsAccordion';
 import CampusAccordion from '../../components/CampusAccordion';
 
+const API_URL = import.meta.env.VITE_APP_API_URL;
+const API_KEY = import.meta.env.VITE_APP_API_KEY;
+
 /**
- * Edit component for managing rooms and business hours data
+ * Edit component for managing rooms and business hours data via API
  * @returns {JSX.Element} Edit page component
  */
 const Edit = memo(() => {
@@ -17,49 +16,117 @@ const Edit = memo(() => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  // Fetch existing data on component mount
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const metropoliaDataRef = collection(db, 'MetropoliaData');
-        const roomsDoc = await getDoc(doc(metropoliaDataRef, 'rooms'));
-        const businessHoursDoc = await getDoc(doc(metropoliaDataRef, 'businesshours'));
-
-        if (roomsDoc.exists()) {
-          setRooms(roomsDoc.data().rooms || {});
-        }
-        if (businessHoursDoc.exists()) {
-          setBusinessHours(businessHoursDoc.data() || { campuses: [] });
-        }
-      } catch (err) {
-        setError('Error loading data: ' + err.message);
-        console.error('Error fetching data:', err);
-      } finally {
-        setLoading(false);
+  /**
+   * Fetch all rooms from backend
+   */
+  const fetchRooms = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/rooms/all`, {
+        headers: { apikey: API_KEY }
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to fetch rooms: ${response.statusText}`);
       }
-    };
-
-    fetchData();
+      const roomsArr = await response.json();
+      const roomsObj = roomsArr.reduce((acc, room) => {
+        acc[room.roomNumber] = room;
+        return acc;
+      }, {});
+      setRooms(roomsObj);
+    } catch (err) {
+      setError(`Error loading rooms: ${err.message}`);
+    }
   }, []);
 
-  // Save all changes
-  const handleSave = async () => {
-    setLoading(true);
+  /**
+   * Fetch all campus business hours from backend
+   */
+  const fetchBusinessHours = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/campuses/hours`, {
+        headers: { apikey: API_KEY }
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to fetch campus hours: ${response.statusText}`);
+      }
+      const data = await response.json();
+      setBusinessHours(data);
+    } catch (err) {
+      setError(`Error loading campus hours: ${err.message}`);
+    }
+  }, []);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      setError(null);
+      await fetchRooms();
+      await fetchBusinessHours();
+      setLoading(false);
+    };
+    loadData();
+  }, [fetchRooms, fetchBusinessHours]);
+
+  /**
+   * Save room details to backend
+   * @param {string} roomNumber
+   * @param {object} updates
+   */
+  const saveRoom = async (roomNumber, updates) => {
     setError(null);
     setSuccess(null);
-
     try {
-      const metropoliaDataRef = collection(db, 'MetropoliaData');
-
-      await setDoc(doc(metropoliaDataRef, 'rooms'), { rooms });
-      await setDoc(doc(metropoliaDataRef, 'businesshours'), businessHours);
-
-      setSuccess('Changes saved successfully!');
+      const response = await fetch(`${API_URL}/api/rooms/update`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: API_KEY
+        },
+        body: JSON.stringify({ roomNumber, updates })
+      });
+      if (!response.ok) {
+        const { message } = await response.json();
+        throw new Error(message || 'Failed to update room');
+      }
+      const { room } = await response.json();
+      setRooms(prev => ({ ...prev, [roomNumber]: room }));
+      setSuccess(`Room ${roomNumber} updated successfully.`);
     } catch (err) {
-      setError('Error saving changes: ' + err.message);
-      console.error('Error saving data:', err);
-    } finally {
-      setLoading(false);
+      setError(`Error saving room: ${err.message}`);
+    }
+  };
+
+  /**
+   * Save campus hours to backend
+   * @param {string} campusShorthand
+   * @param {object} hours
+   */
+  const saveCampusHours = async (campusShorthand, hours) => {
+    setError(null);
+    setSuccess(null);
+    try {
+      const response = await fetch(`${API_URL}/api/campus/hours/update`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: API_KEY
+        },
+        body: JSON.stringify({ campusShorthand, hours })
+      });
+      if (!response.ok) {
+        const { message } = await response.json();
+        throw new Error(message || 'Failed to update campus hours');
+      }
+      const { campus } = await response.json();
+      setBusinessHours(prev => ({
+        ...prev,
+        campuses: prev.campuses.map(c =>
+          c.shorthand === campusShorthand ? campus : c
+        )
+      }));
+      setSuccess(`Campus ${campusShorthand} hours updated successfully.`);
+    } catch (err) {
+      setError(`Error saving campus hours: ${err.message}`);
     }
   };
 
@@ -89,20 +156,14 @@ const Edit = memo(() => {
           setRooms={setRooms}
           setError={setError}
           setSuccess={setSuccess}
+          saveRoom={saveRoom}
         />
 
-        <CampusAccordion businessHours={businessHours} setBusinessHours={setBusinessHours} />
-      </div>
-
-      <div className="flex justify-end mt-6">
-        <button
-          onClick={handleSave}
-          disabled={loading}
-          className={`px-6 py-2 ${loading ? ' bg-red' : ' bg-blue hover:bg-indigo-950'}
-            text-white rounded transition-colors`}
-        >
-          {loading ? 'Saving...' : 'Save all Changes'}
-        </button>
+        <CampusAccordion
+          businessHours={businessHours}
+          setBusinessHours={setBusinessHours}
+          saveCampusHours={saveCampusHours}
+        />
       </div>
     </div>
   );

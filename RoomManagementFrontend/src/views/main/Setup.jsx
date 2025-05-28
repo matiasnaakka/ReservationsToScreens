@@ -1,6 +1,4 @@
 import { memo, useState } from 'react';
-import { db } from '../../config/firebase';
-import { collection, writeBatch, doc, setDoc } from 'firebase/firestore';
 import roomsData from '../../data/rooms.json';
 import businessHoursData from '../../data/businesshours.json';
 
@@ -13,56 +11,29 @@ const Setup = memo(() => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
+  const API_URL = import.meta.env.VITE_APP_URL_PATH;
+  const API_KEY = import.meta.env.VITE_APP_API_KEY;
+
   /**
-   * Imports room data into Firestore as a single document
-   * @returns {Promise<void>}
+   * Calls backend API to import data from JSON files
    */
   const importRoomsData = async () => {
-    try {
-      const metropoliaDataRef = collection(db, 'MetropoliaData');
-      const roomsDocRef = doc(metropoliaDataRef, 'rooms');
+    const response = await fetch(`${API_URL}/api/import/init`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: API_KEY,
+      },
+    });
 
-      // Create a rooms object with roomNumber as keys
-      const roomsObject = {
-        rooms: roomsData.reduce((acc, room) => {
-          acc[room.roomNumber] = room;
-          return acc;
-        }, {})
-      };
-
-      await setDoc(roomsDocRef, roomsObject);
-    } catch (error) {
-      console.error('Error importing rooms:', error);
-      throw new Error('Failed to import rooms data');
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Import failed: ${errorText}`);
     }
   };
 
   /**
-   * Imports business hours data into Firestore using batch writes
-   * @returns {Promise<void>}
-   */
-  const importBusinessHoursData = async () => {
-    try {
-      const batch = writeBatch(db);
-      const metropoliaDataRef = collection(db, 'MetropoliaData');
-      const businessHoursRef = doc(metropoliaDataRef, 'businesshours');
-  
-      const updatedData = businessHoursData.campuses.map(campus => ({
-        ...campus,
-        imageUrl: campus.imageUrl || 'https://defaultimage.com/default.jpg' // Default image if none provided
-      }));
-  
-      batch.set(businessHoursRef, { campuses: updatedData });
-      await batch.commit();
-    } catch (error) {
-      console.error('Error importing business hours:', error);
-      throw new Error('Failed to import business hours data');
-    }
-  };
-  
-
-  /**
-   * Handles the data import process with error handling
+   * Handles the data import process
    * @param {React.MouseEvent} e - Click event
    */
   const handleImportData = async (e) => {
@@ -73,11 +44,9 @@ const Setup = memo(() => {
 
     try {
       await importRoomsData();
-      await importBusinessHoursData();
-      setSuccess('Data imported successfully!');
+      setSuccess('Data import completed successfully.');
     } catch (err) {
       setError(`Error importing data: ${err.message}`);
-      console.error('Import error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -90,7 +59,7 @@ const Setup = memo(() => {
       <div className="bg-white shadow-md rounded-lg p-6 mb-6">
         <h3 className="text-xl font-semibold mb-4">Data Import</h3>
         <p className="text-gray-600 mb-4">
-          Import rooms and business hours data into the Firestore database.
+          Import rooms and business hours data into the system.
         </p>
 
         {error && (

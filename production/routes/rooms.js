@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import express from 'express';
 import openData from '../utils/opendata.js';
 import logger from '../utils/logger.js';
@@ -17,6 +19,11 @@ const router = express.Router();
 
 export default (apiKey) => {
   // /api/rooms
+
+  router.post('/api/test', (req, res) => {
+    res.status(200).json({ message: 'POST toimii!' });
+  });
+
   router.get('/api/rooms', async (req, res) => {
     if (req.headers.apikey !== apiKey) {
       logger.warn('Unauthorized access attempt', { ip: req.ip, path: req.path });
@@ -453,8 +460,8 @@ export default (apiKey) => {
         );
       });
 
-const businessHoursDoc = await BusinessHours.findOne({});
-const businessHours = businessHoursDoc ? businessHoursDoc.toObject() : { campuses: [] };
+      const businessHoursDoc = await BusinessHours.findOne({});
+      const businessHours = businessHoursDoc ? businessHoursDoc.toObject() : { campuses: [] };
 
 
       const enrichedRooms = await Promise.all(
@@ -596,6 +603,228 @@ const businessHours = businessHoursDoc ? businessHoursDoc.toObject() : { campuse
       res.status(500).json({ message: error.message });
     }
   });
+
+  // /api/rooms/update
+  router.put('/api/rooms/update', async (req, res) => {
+    if (req.headers.apikey !== apiKey) {
+      logger.warn('Unauthorized access attempt', { ip: req.ip, path: req.path });
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const { roomNumber, updates } = req.body;
+
+    if (!roomNumber || !updates) {
+      return res.status(400).json({ message: 'Room number and updates are required' });
+    }
+
+    try {
+      const room = await Room.findOneAndUpdate({ roomNumber }, updates, { new: true });
+      if (!room) {
+        return res.status(404).json({ message: 'Room not found' });
+      }
+      logger.info('Room details updated', { roomNumber, updates });
+      res.json({ message: 'Room updated successfully', room });
+    } catch (error) {
+      logger.error('Error updating room details', { error: error.message, roomNumber, updates });
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // /api/campus/hours/update
+  router.put('/api/campus/hours/update', async (req, res) => {
+    if (req.headers.apikey !== apiKey) {
+      logger.warn('Unauthorized access attempt', { ip: req.ip, path: req.path });
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const { campusShorthand, hours } = req.body;
+
+    if (!campusShorthand || !hours) {
+      return res.status(400).json({ message: 'Campus shorthand and hours are required' });
+    }
+
+    try {
+      const businessHoursDoc = await BusinessHours.findOne({});
+      if (!businessHoursDoc) {
+        return res.status(404).json({ message: 'Business hours data not found' });
+      }
+
+      const campus = businessHoursDoc.campuses.find(c => c.shorthand === campusShorthand);
+      if (!campus) {
+        return res.status(404).json({ message: 'Campus not found' });
+      }
+
+      campus.hours = hours;
+      await businessHoursDoc.save();
+
+      logger.info('Campus hours updated', { campusShorthand, hours });
+      res.json({ message: 'Campus hours updated successfully', campus });
+    } catch (error) {
+      logger.error('Error updating campus hours', { error: error.message, campusShorthand, hours });
+      res.status(500).json({ message: error.message });
+    }
+  });
+  // /api/rooms/all
+  router.get('/api/rooms/all', async (req, res) => {
+    if (req.headers.apikey !== apiKey) {
+      logger.warn('Unauthorized access attempt', { ip: req.ip, path: req.path });
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    try {
+      const allRooms = await Room.find({});
+      if (!allRooms.length) {
+        return res.status(404).json({ message: 'No rooms found' });
+      }
+      res.json(allRooms.map(room => room.toObject()));
+    } catch (error) {
+      logger.error('Error fetching all rooms', { error: error.message });
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // /api/rooms/delete
+  router.delete('/api/rooms/delete', async (req, res) => {
+    if (req.headers.apikey !== apiKey) {
+      logger.warn('Unauthorized delete attempt', { ip: req.ip, path: req.path });
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const { roomNumber } = req.body;
+
+    if (!roomNumber) {
+      return res.status(400).json({ message: 'Room number is required' });
+    }
+
+    try {
+      const result = await Room.findOneAndDelete({ roomNumber });
+      if (!result) {
+        return res.status(404).json({ message: 'Room not found' });
+      }
+
+      logger.info('Room deleted', { roomNumber });
+      res.json({ message: 'Room deleted successfully', deletedRoom: result });
+    } catch (error) {
+      logger.error('Error deleting room', { error: error.message, roomNumber });
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // /api/campuses/hours
+  router.get('/api/campuses/hours', async (req, res) => {
+    console.log('Fetching campus business hours');
+    if (req.headers.apikey !== apiKey) {
+      logger.warn('Unauthorized access attempt', { ip: req.ip, path: req.path });
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    console.log('Fetching campus business hours');
+    try {
+      console.log('Fetching campus business hours');
+      const businessHoursDoc = await BusinessHours.findOne({});
+      if (!businessHoursDoc) {
+        return res.status(404).json({ message: 'Business hours data not found' });
+      }
+
+      res.json({ campuses: businessHoursDoc.campuses });
+    } catch (error) {
+      logger.error('Error fetching campus business hours', { error: error.message });
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  router.post('/api/import/init', async (req, res) => {
+    if (req.headers.apikey !== apiKey) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    try {
+      // Lue JSON-tiedostot tiedostojärjestelmasta
+      const roomsJson = JSON.parse(fs.readFileSync(path.resolve('data/rooms.json')));
+      const businessHoursJson = JSON.parse(fs.readFileSync(path.resolve('data/businesshours.json')));
+
+      // Tyhjennä olemassa olevat tiedot
+      await Room.deleteMany({});
+      await BusinessHours.deleteMany({});
+
+      // Lisää huoneet
+      await Room.insertMany(roomsJson);
+
+      // Lisää kampukset
+      const bh = new BusinessHours(businessHoursJson);
+      await bh.save();
+
+      res.status(200).json({ message: 'Initial data imported successfully' });
+    } catch (err) {
+      console.error('Error importing data:', err);
+      res.status(500).json({ message: 'Failed to import data', error: err.message });
+    }
+  });
+
+  // /api/rooms/add
+  router.post('/api/rooms/add', async (req, res) => {
+    if (req.headers.apikey !== apiKey) {
+      logger.warn('Unauthorized access attempt', { ip: req.ip, path: req.path });
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const roomData = req.body;
+
+    if (!roomData.roomNumber) {
+      return res.status(400).json({ message: 'Room number is required' });
+    }
+
+    try {
+      const existing = await Room.findOne({ roomNumber: roomData.roomNumber });
+      if (existing) {
+        return res.status(409).json({ message: 'Room already exists' });
+      }
+
+      const newRoom = new Room(roomData);
+      await newRoom.save();
+
+      logger.info('New room added', { roomNumber: roomData.roomNumber });
+      res.status(201).json({ message: 'Room added successfully', room: newRoom });
+    } catch (err) {
+      logger.error('Error adding room', { error: err.message });
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  router.post('/api/rooms/validate', async (req, res) => {
+    const { roomNumber } = req.body;
+    if (!roomNumber) return res.status(400).json({ message: 'Room number required' });
+
+    const metropoliaApiKey = process.env.APIKEYMETROPOLIA;
+    if (!metropoliaApiKey) {
+      console.error('❌ APIKEYMETROPOLIA missing from .env');
+      return res.status(500).json({ message: 'Server misconfigured' });
+    }
+
+    try {
+      const auth = Buffer.from(`${metropoliaApiKey}:`).toString('base64'); // <-- korjattu
+      const response = await fetch('https://opendata.metropolia.fi/r1/reservation/building/78025', {
+        headers: {
+          Authorization: `Basic ${auth}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        console.error('❌ External API responded with status:', response.status);
+        throw new Error('Failed to fetch from Metropolia open API');
+      }
+
+      const data = await response.json();
+      const exists = data.resources.some(
+        (r) => r.type === 'room' && r.code.toUpperCase() === roomNumber.toUpperCase()
+      );
+
+      return res.json({ exists });
+    } catch (err) {
+      console.error('Room validation error:', err.message);
+      return res.status(500).json({ message: 'Error validating room' });
+    }
+  });
+
 
   return router;
 };

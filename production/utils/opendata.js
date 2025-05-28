@@ -23,7 +23,7 @@ const checkOpenDataReservations = async (code, studentGroup) => {
   const options = {
     method: 'POST',
     headers: {
-      'Authorization': 'Basic ' + btoa(process.env.APIKEYMETROPOLIA || ''),
+     'Authorization': 'Basic ' + btoa(`${process.env.APIKEYMETROPOLIA}:`),
       'Content-Type': 'application/json',
     },
     body: body,
@@ -50,7 +50,7 @@ const checkOpenDataRealization = async (code) => {
   const options = {
     method: 'POST',
     headers: {
-      'Authorization': 'Basic ' + btoa(process.env.APIKEYMETROPOLIA || ''),
+   'Authorization': 'Basic ' + btoa(`${process.env.APIKEYMETROPOLIA}:`),
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({codes: [code]}),
@@ -85,7 +85,7 @@ const checkOpenDataReservation = async (room, startDate, endDate) => {
   const options = {
     method: 'POST',
     headers: {
-      'Authorization': 'Basic ' + btoa(process.env.APIKEYMETROPOLIA || ''),
+    'Authorization': 'Basic ' + btoa(`${process.env.APIKEYMETROPOLIA}:`),
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(searchParams)

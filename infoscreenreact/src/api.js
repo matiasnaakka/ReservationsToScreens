@@ -1,11 +1,11 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://opendataapi-6c68c2d89038.herokuapp.com";
+const API_BASE_URL = "http://localhost:3000/";
 const API_KEY = import.meta.env.VITE_API_KEY;
 
 export const fetchAllRooms = async (floor, startDate, endDate) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/rooms/freespace-full`, {
+    const response = await axios.get(`${API_BASE_URL}api/rooms/freespace-full`, {
       headers: { apikey: API_KEY },
       params: {
         floor,

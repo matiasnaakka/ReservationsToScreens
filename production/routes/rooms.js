@@ -2,6 +2,9 @@ import express from 'express';
 import openData from '../utils/opendata.js';
 import logger from '../utils/logger.js';
 import Room from '../models/Room.js';
+import BusinessHours from '../models/BusinessHours.js';
+import { groupDetailsMappings, floorColorCodes } from '../utils/constants.js';
+
 import {
   getUtcNow,
   finlandTimezoneOffset,
@@ -10,21 +13,19 @@ import {
   finnishToUtc,
 } from '../utils/timezone.js';
 
-import BusinessHours from '../models/BusinessHours.js';
-
 const router = express.Router();
 
 export default (apiKey) => {
   // /api/rooms
   router.get('/api/rooms', async (req, res) => {
     if (req.headers.apikey !== apiKey) {
-      logger.warn('Unauthorized access attempt', {ip: req.ip, path: req.path});
-      return res.status(401).json({message: 'Unauthorized'});
+      logger.warn('Unauthorized access attempt', { ip: req.ip, path: req.path });
+      return res.status(401).json({ message: 'Unauthorized' });
     }
     try {
       const allRoomsArr = await Room.find({});
       if (!allRoomsArr.length) {
-        res.status(404).json({message: 'Rooms data not found'});
+        res.status(404).json({ message: 'Rooms data not found' });
       } else {
         // Convert array to object keyed by roomNumber for compatibility
         const allRooms = {};
@@ -32,18 +33,18 @@ export default (apiKey) => {
         res.json(allRooms);
       }
     } catch (error) {
-      logger.error('Error fetching rooms data', {error: error.message});
-      res.status(500).json({message: error.message});
+      logger.error('Error fetching rooms data', { error: error.message });
+      res.status(500).json({ message: error.message });
     }
   });
 
   // /api/rooms/reservations
   router.get('/api/rooms/reservations', async (req, res) => {
     if (req.headers.apikey !== apiKey) {
-      logger.warn('Unauthorized access attempt', {ip: req.ip, path: req.path});
-      return res.status(401).json({message: 'Unauthorized'});
+      logger.warn('Unauthorized access attempt', { ip: req.ip, path: req.path });
+      return res.status(401).json({ message: 'Unauthorized' });
     }
-    const {floor, Staffworkspace, startDate, endDate} = req.query;
+    const { floor, Staffworkspace, startDate, endDate } = req.query;
     try {
       logger.info('Fetching filtered rooms with reservations', {
         floor,
@@ -53,14 +54,14 @@ export default (apiKey) => {
       });
       const allRoomsArr = await Room.find({});
       if (!allRoomsArr.length) {
-        return res.status(404).json({message: 'Rooms data not found'});
+        return res.status(404).json({ message: 'Rooms data not found' });
       }
       const filteredRooms = allRoomsArr.filter((room) => {
         const matchesFloor = floor === 'All Floors' || room.floor === floor;
         const matchesStaff =
           Staffworkspace === 'true'
             ? room.details === 'Henkilöstön työtila' &&
-              room.reservableStaff === 'true'
+            room.reservableStaff === 'true'
             : true;
         return matchesFloor && matchesStaff && room.building === 'KM';
       });
@@ -83,17 +84,15 @@ export default (apiKey) => {
       logger.error('Error fetching filtered rooms with reservations', {
         error: error.message,
       });
-      res.status(500).json({message: error.message});
+      res.status(500).json({ message: error.message });
     }
   });
 
-  // /api/rooms/freespace
-
-  // /api/rooms/freespace
+  ///api/rooms/freespace
   router.get('/api/rooms/freespace', async (req, res) => {
     if (req.headers.apikey !== apiKey) {
-      logger.warn('Unauthorized access attempt', {ip: req.ip, path: req.path});
-      return res.status(401).json({message: 'Unauthorized'});
+      logger.warn('Unauthorized access attempt', { ip: req.ip, path: req.path });
+      return res.status(401).json({ message: 'Unauthorized' });
     }
 
     const {
@@ -127,7 +126,7 @@ export default (apiKey) => {
       const formattedDetails = details ? details.trim() : null;
       const roomsDoc = await db.collection('MetropoliaData').doc('rooms').get();
       if (!roomsDoc.exists) {
-        return res.status(404).json({message: 'Rooms data not found'});
+        return res.status(404).json({ message: 'Rooms data not found' });
       }
 
       const allRooms = roomsDoc.data().rooms || {};
@@ -192,7 +191,7 @@ export default (apiKey) => {
         .get();
       const businessHours = businessHoursDoc.exists
         ? businessHoursDoc.data()
-        : {campuses: []};
+        : { campuses: [] };
 
       const enrichedRooms = await Promise.all(
         filteredRooms.map(async (room) => {
@@ -311,16 +310,16 @@ export default (apiKey) => {
             currentReservation,
             nextReservation: nextReservation
               ? {
-                  ...nextReservation,
-                  startDate: nextReservation.startDate,
-                  endDate: nextReservation.endDate,
-                }
+                ...nextReservation,
+                startDate: nextReservation.startDate,
+                endDate: nextReservation.endDate,
+              }
               : null,
             freeUntil: nextReservation
               ? nextReservation.startDate
               : isOpen
-              ? closingTime.toISOString()
-              : null,
+                ? closingTime.toISOString()
+                : null,
             freeForMinutes: effectiveFreeDuration,
             closingTime: closingTime ? closingTime.toISOString() : null,
             minutesUntilClosing,
@@ -344,21 +343,21 @@ export default (apiKey) => {
         return roomNumberA - roomNumberB;
       });
 
-      const packedData = {metadata, rooms: enrichedRooms};
+      const packedData = { metadata, rooms: enrichedRooms };
       res.json(packedData);
     } catch (error) {
       logger.error('Error fetching filtered rooms with reservations', {
         error: error.message,
       });
-      res.status(500).json({message: error.message});
+      res.status(500).json({ message: error.message });
     }
   });
 
   // /api/rooms/freespace-full
   router.get('/api/rooms/freespace-full', async (req, res) => {
     if (req.headers.apikey !== apiKey) {
-      logger.warn('Unauthorized access attempt', {ip: req.ip, path: req.path});
-      return res.status(401).json({message: 'Unauthorized'});
+      logger.warn('Unauthorized access attempt', { ip: req.ip, path: req.path });
+      return res.status(401).json({ message: 'Unauthorized' });
     }
 
     const {
@@ -390,12 +389,16 @@ export default (apiKey) => {
       });
 
       const formattedDetails = details ? details.trim() : null;
-      const roomsDoc = await db.collection('MetropoliaData').doc('rooms').get();
-      if (!roomsDoc.exists) {
-        return res.status(404).json({message: 'Rooms data not found'});
+      const allRoomsArr = await Room.find({});
+      if (!allRoomsArr.length) {
+        return res.status(404).json({ message: 'Rooms data not found' });
       }
 
-      const allRooms = roomsDoc.data().rooms || {};
+      const allRooms = {};
+      allRoomsArr.forEach(room => {
+        allRooms[room.roomNumber] = room.toObject();
+      });
+
 
       // Extract unique metadata
       const metadata = {
@@ -450,14 +453,9 @@ export default (apiKey) => {
         );
       });
 
-      // Fetch business hours
-      const businessHoursDoc = await db
-        .collection('MetropoliaData')
-        .doc('businesshours')
-        .get();
-      const businessHours = businessHoursDoc.exists
-        ? businessHoursDoc.data()
-        : {campuses: []};
+const businessHoursDoc = await BusinessHours.findOne({});
+const businessHours = businessHoursDoc ? businessHoursDoc.toObject() : { campuses: [] };
+
 
       const enrichedRooms = await Promise.all(
         filteredRooms.map(async (room) => {
@@ -519,8 +517,8 @@ export default (apiKey) => {
           );
           const freeDuration = nextReservation
             ? Math.floor(
-                (new Date(nextReservation.startDate) - now) / (1000 * 60),
-              )
+              (new Date(nextReservation.startDate) - now) / (1000 * 60),
+            )
             : null;
 
           // Calculate minutes until closing
@@ -563,8 +561,8 @@ export default (apiKey) => {
             freeUntil: nextReservation
               ? nextReservation.startDate
               : isOpen
-              ? closingTime.toISOString()
-              : null,
+                ? closingTime.toISOString()
+                : null,
             freeForMinutes: effectiveFreeDuration,
             closingTime: closingTime ? closingTime.toISOString() : null,
             minutesUntilClosing,
@@ -589,13 +587,13 @@ export default (apiKey) => {
         return roomNumberA - roomNumberB;
       });
 
-      const packedData = {metadata, rooms: enrichedRooms};
+      const packedData = { metadata, rooms: enrichedRooms };
       res.json(packedData);
     } catch (error) {
       logger.error('Error fetching filtered rooms with reservations', {
         error: error.message,
       });
-      res.status(500).json({message: error.message});
+      res.status(500).json({ message: error.message });
     }
   });
 

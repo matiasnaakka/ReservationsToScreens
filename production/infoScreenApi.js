@@ -4,6 +4,7 @@ import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import logger from './utils/logger.js';
+import jwt from 'jsonwebtoken';
 
 import rootRoute from './routes/root.js';
 import protectedRoute from './routes/protected.js';
@@ -24,6 +25,60 @@ const app = express();
 // Middleware
 app.use(cors({ origin: '*' }));
 app.use(express.json());
+
+// Add login endpoint
+/**
+ * POST /api/login
+ * Authenticates user against Metropolia Streams API or .env dev credentials and returns JWT on success.
+ */
+app.post('/api/login', async (req, res) => {
+  const { username, password } = req.body;
+  const devUser = process.env.DEV_USER;
+  const devPassword = process.env.DEV_PASSWORD;
+
+  // Allow login with .env dev credentials
+  if (
+    devUser &&
+    devPassword &&
+    username === devUser &&
+    password === devPassword
+  ) {
+    const token = jwt.sign(
+      { username: devUser, staff: false, dev: true },
+      process.env.JWT_SECRET || 'default_jwt_secret',
+      { expiresIn: '2h' }
+    );
+    return res.json({ token });
+  }
+
+  try {
+    const response = await fetch('https://streams.metropolia.fi/2.0/api/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await response.json();
+
+    if (data.message === 'invalid username or password') {
+      return res.status(401).json({ message: 'Invalid username or password.' });
+    }
+    if (data.staff === true) {
+      return res.status(403).json({ message: 'Staff accounts are not allowed to login.' });
+    }
+    if (data.user && data.staff === false) {
+      const token = jwt.sign(
+        { username: data.user, staff: data.staff },
+        process.env.JWT_SECRET || 'default_jwt_secret',
+        { expiresIn: '2h' }
+      );
+      return res.json({ token });
+    }
+    return res.status(500).json({ message: 'Unexpected response from authentication service.' });
+  } catch (err) {
+    logger.error('Login error', { error: err.message });
+    return res.status(500).json({ message: `Login failed: ${err.message}` });
+  }
+});
 
 // Mongo yhteys ja reitit
 connectMongo().then(() => {

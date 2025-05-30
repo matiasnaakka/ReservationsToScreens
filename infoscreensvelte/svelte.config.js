@@ -6,14 +6,14 @@ const config = {
 	preprocess: vitePreprocess(),
 	kit: {
 		adapter: adapter({
-			pages: 'build',
-			assets: 'build',
+			pages: '../production/infoscreenFrontendSvelte',
+			assets: '../production/infoscreenFrontendSvelte',
 			fallback: 'index.html',
 			precompress: false,
 			strict: false
 		}),
 		paths: {
-			base: process.env.NODE_ENV === 'production' ? '/infoScreenProject' : ''
+			base: process.env.NODE_ENV === 'production' ? '/svelte' : ''
 		},
 		alias: {
 			$components: './src/components',

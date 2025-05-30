@@ -1,20 +1,20 @@
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig } from "vite";
 
-// https://vitejs.dev/config/
+// Määrittele ympäristö muuttuja
+const isProduction = process.env.NODE_ENV === 'production';
+
 export default defineConfig({
-  base: "/roomscontentmanagement/",
+  base: isProduction ? '/roomscontentmanagement/' : './',
   plugins: [react()],
   build: {
-    // Use esbuild for minification during the build process
-    minify: "esbuild",
+    outDir: '../production/roomscontentmanagement',
+    minify: 'esbuild',
   },
   esbuild: {
-    // Remove console and debugger statements during the build process
     drop: ["console", "debugger"],
   },
   define: {
-    // Pass environment variables to the app during build
     "process.env": process.env,
   },
 });

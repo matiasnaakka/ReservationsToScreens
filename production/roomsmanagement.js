@@ -46,7 +46,7 @@ const startTime = new Date();
  * Configures Express to serve static files from 'roomsmanagement' directory
  * Files are served from a dedicated directory only
  */
-app.use(express.static('roomsmanagement'));
+app.use(express.static('roomsManagement'));
 
 /**
  * SPA Fallback Route
@@ -55,7 +55,7 @@ app.use(express.static('roomsmanagement'));
  */
 app.get('*', (_req, res) => {
   try {
-    res.sendFile('index.html', { root: 'roomsmanagement' });
+    res.sendFile('index.html', { root: 'roomsManagement' });
   } catch (error) {
     logger.error('Error serving index.html:', error);
     res.status(500).json('Error serving application');

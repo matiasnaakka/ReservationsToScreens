@@ -6,7 +6,7 @@
   "homepage": "https://matiasnaakka.github.io/Reservationstatus",
   "scripts": {
     "dev": "vite --host --port 3006 --open",
-    "build": " vite build --outDir ../production/infoScreenFrontend --emptyOutDir",
+    "build": "npm run resize-images && vite build --outDir ../production/infoScreenFrontend --emptyOutDir",
 
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",

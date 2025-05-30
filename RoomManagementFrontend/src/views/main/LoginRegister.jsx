@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
+const API_URL = import.meta.env.VITE_APP_API_URL;
+
 /**
- * LoginRegister component handles user authentication via Metropolia Streams API
+ * LoginRegister component handles user authentication via backend API
  * @param {Object} props - Component props
  * @param {Function} props.onLoginSuccess - Callback function called after successful login
  * @returns {JSX.Element} Login/Register form
@@ -17,7 +19,7 @@ const LoginRegister = ({ onLoginSuccess }) => {
   const [loading, setLoading] = useState(false);
 
   /**
-   * Handles authentication using Metropolia Streams API
+   * Handles authentication using backend API
    * @param {Event} e
    */
   const handleAuth = async (e) => {
@@ -26,7 +28,7 @@ const LoginRegister = ({ onLoginSuccess }) => {
     setLoading(true);
 
     try {
-      const response = await fetch('https://streams.metropolia.fi/2.0/api/', {
+      const response = await fetch(`${API_URL}/api/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -36,33 +38,21 @@ const LoginRegister = ({ onLoginSuccess }) => {
 
       const data = await response.json();
 
-      console.log('Login API response:', data);
-
-      if (data.message === 'invalid username or password') {
-        console.log('Login failed: invalid username or password');
-        setError('Invalid username or password.');
+      if (!response.ok) {
+        setError(data.message || 'Login failed.');
         setLoading(false);
         return;
       }
 
-      if (data.staff === true) {
-        console.log('Login failed: staff account not allowed', data);
-        setError('Staff accounts are not allowed to login.');
-        setLoading(false);
-        return;
-      }
-
-      if (data.user && data.staff === false) {
-        console.log('Login success:', data);
+      if (data.token) {
+        localStorage.setItem('roomsmanagement_token', data.token);
         onLoginSuccess();
         navigate('/dashboard');
         return;
       }
 
-      console.log('Login failed: unexpected response', data);
       setError('Unexpected response from authentication service.');
     } catch (err) {
-      console.log('Login error:', err);
       setError(`Login failed: ${err.message}`);
     } finally {
       setLoading(false);
@@ -111,6 +101,16 @@ const LoginRegister = ({ onLoginSuccess }) => {
           {loading ? 'Logging in...' : 'Login'}
         </button>
         {/* Registration is not supported with this API */}
+      </form>
+    </div>
+  );
+};
+
+LoginRegister.propTypes = {
+  onLoginSuccess: PropTypes.func.isRequired
+};
+
+export default LoginRegister;
       </form>
     </div>
   );

@@ -3,7 +3,7 @@ import RoomsAccordion from '../../components/RoomsAccordion';
 import CampusAccordion from '../../components/CampusAccordion';
 
 const API_URL = import.meta.env.VITE_APP_API_URL;
-const API_KEY = import.meta.env.VITE_APP_API_KEY;
+const token = localStorage.getItem('roomsmanagement_token');
 
 /**
  * Edit component for managing rooms and business hours data via API
@@ -22,7 +22,7 @@ const Edit = memo(() => {
   const fetchRooms = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}/api/rooms/all`, {
-        headers: { apikey: API_KEY }
+        headers: { Authorization: `Bearer ${token}` }
       });
       if (!response.ok) {
         throw new Error(`Failed to fetch rooms: ${response.statusText}`);
@@ -44,7 +44,7 @@ const Edit = memo(() => {
   const fetchBusinessHours = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}/api/campuses/hours`, {
-        headers: { apikey: API_KEY }
+        headers: { Authorization: `Bearer ${token}` }
       });
       if (!response.ok) {
         throw new Error(`Failed to fetch campus hours: ${response.statusText}`);
@@ -80,7 +80,7 @@ const Edit = memo(() => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          apikey: API_KEY
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ roomNumber, updates })
       });
@@ -109,7 +109,7 @@ const Edit = memo(() => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          apikey: API_KEY
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ campusShorthand, hours })
       });

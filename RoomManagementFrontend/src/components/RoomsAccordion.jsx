@@ -4,6 +4,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const API_KEY = import.meta.env.VITE_APP_API_KEY;
 const API_URL = import.meta.env.VITE_APP_API_URL;
+const token = localStorage.getItem('roomsmanagement_token');
 
 const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => {
   const [expandedRoom, setExpandedRoom] = useState(null);
@@ -35,84 +36,84 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => 
   };
 
   const validateRoomWithMetropolia = async (roomNumber) => {
-  const response = await fetch(`${API_URL}/api/rooms/validate`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      apikey: API_KEY,
-    },
-    body: JSON.stringify({ roomNumber }),
-  });
-
-  if (!response.ok) {
-    throw new Error('Room validation failed');
-  }
-
-  const { exists } = await response.json();
-  return exists;
-};
-
-
-const handleAddRoom = async () => {
-  const newRoomNumber = prompt('Enter new room number: Example KMC201');
-  if (!newRoomNumber || newRoomNumber.trim().length < 3) {
-    setError('Please enter a valid room number.');
-    return;
-  }
-
-  setError(null);
-  setSuccess(null);
-  setLoading(true);
-
-  try {
-    // ✅ Tarkista Metropolian open API:n kautta (backendin kautta)
-    const isValidRoom = await validateRoomWithMetropolia(newRoomNumber);
-    if (!isValidRoom) {
-      setError(`Room ${newRoomNumber} not found in Metropolia open API.`);
-      return;
-    }
-
-    // ✅ Tarkista ettei ole jo lisätty
-    if (rooms[newRoomNumber]) {
-      setError('The room already exists in the local data.');
-      return;
-    }
-
-    const newRoom = {
-      roomNumber: newRoomNumber,
-      floor: '',
-      building: '',
-      wing: '',
-      persons: '0',
-      squareMeters: '0',
-      details: '',
-      reservableStudents: 'false',
-      reservableStaff: 'false',
-    };
-
-    const response = await fetch(`${API_URL}/api/rooms/add`, {
+    const response = await fetch(`${API_URL}/api/rooms/validate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        apikey: API_KEY,
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(newRoom),
+      body: JSON.stringify({ roomNumber }),
     });
 
     if (!response.ok) {
-      const { message } = await response.json();
-      throw new Error(message || 'Failed to add room.');
+      throw new Error('Room validation failed');
     }
 
-    const { room } = await response.json();
-    handleRoomUpdate(room.roomNumber, room);
-    setSuccess(`Room ${room.roomNumber} added successfully.`);
-  } catch (error) {
-    setError(`Error adding room: ${error.message}`);
-  } finally {
-    setLoading(false);
-  }
-};
+    const { exists } = await response.json();
+    return exists;
+  };
+
+
+  const handleAddRoom = async () => {
+    const newRoomNumber = prompt('Enter new room number: Example KMC201');
+    if (!newRoomNumber || newRoomNumber.trim().length < 3) {
+      setError('Please enter a valid room number.');
+      return;
+    }
+
+    setError(null);
+    setSuccess(null);
+    setLoading(true);
+
+    try {
+      // ✅ Tarkista Metropolian open API:n kautta (backendin kautta)
+      const isValidRoom = await validateRoomWithMetropolia(newRoomNumber);
+      if (!isValidRoom) {
+        setError(`Room ${newRoomNumber} not found in Metropolia open API.`);
+        return;
+      }
+
+      // ✅ Tarkista ettei ole jo lisätty
+      if (rooms[newRoomNumber]) {
+        setError('The room already exists in the local data.');
+        return;
+      }
+
+      const newRoom = {
+        roomNumber: newRoomNumber,
+        floor: '',
+        building: '',
+        wing: '',
+        persons: '0',
+        squareMeters: '0',
+        details: '',
+        reservableStudents: 'false',
+        reservableStaff: 'false',
+      };
+
+      const response = await fetch(`${API_URL}/api/rooms/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(newRoom),
+      });
+
+      if (!response.ok) {
+        const { message } = await response.json();
+        throw new Error(message || 'Failed to add room.');
+      }
+
+      const { room } = await response.json();
+      handleRoomUpdate(room.roomNumber, room);
+      setSuccess(`Room ${room.roomNumber} added successfully.`);
+    } catch (error) {
+      setError(`Error adding room: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Save room (API)
   const handleSaveRoom = async (roomNumber, updatedRoom) => {
@@ -144,7 +145,7 @@ const handleAddRoom = async () => {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
-            apikey: API_KEY
+            Authorization: `Bearer ${token}`
           },
           body: JSON.stringify({ roomNumber })
         });

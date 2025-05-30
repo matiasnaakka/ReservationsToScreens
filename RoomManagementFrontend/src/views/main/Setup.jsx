@@ -12,7 +12,7 @@ const Setup = memo(() => {
   const [success, setSuccess] = useState(null);
 
   const API_URL = import.meta.env.VITE_APP_API_URL;
-  const API_KEY = import.meta.env.VITE_APP_API_KEY;
+  const token = localStorage.getItem('roomsmanagement_token');
 
   /**
    * Calls backend API to import data from JSON files
@@ -22,7 +22,7 @@ const Setup = memo(() => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        apikey: API_KEY,
+        Authorization: `Bearer ${token}`,
       },
     });
 

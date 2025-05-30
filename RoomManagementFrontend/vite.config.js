@@ -5,10 +5,10 @@ import { defineConfig } from "vite";
 const isProduction = process.env.NODE_ENV === 'production';
 
 export default defineConfig({
-  base: isProduction ? '/roomscontentmanagement/' : './',
+  base: isProduction ? '/roomsmanagement/' : './',
   plugins: [react()],
   build: {
-    outDir: '../production/roomscontentmanagement',
+    outDir: '../production/roomsManagement',
     minify: 'esbuild',
   },
   esbuild: {

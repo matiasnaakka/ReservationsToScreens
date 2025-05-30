@@ -56,7 +56,7 @@ export default defineConfig({
   base:'/',
 
   build: {
-    outDir: '../production/infoscreenreact',
+    outDir: '../production/infoScreenFrontend',
     assetsInlineLimit: 4096, // 4kb - files smaller than this will be inlined as base64
     minify: false,
 

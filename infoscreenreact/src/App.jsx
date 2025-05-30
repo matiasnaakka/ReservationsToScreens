@@ -59,7 +59,7 @@ import { fetchAllRooms } from "./api";
 const RoomList = lazy(() => import("./components/RoomList"));
 const RoomMap = lazy(() => import("./components/RoomMap"));
 const Instructions = lazy(() => import("./components/instructions"));
-import { isRoomReserved } from "./components/RoomList";
+import { isRoomReserved } from "./utils/roomUtils";
 
 const getInitialScreen = () => {
   const stored = sessionStorage.getItem("currentLoopScreen");

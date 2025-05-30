@@ -3,7 +3,7 @@ import InlineSVG from "react-inlinesvg";
 import Floor7SVG from "../assets/7thfloormap.svg";
 import Floor6SVG from "../assets/6thfloormap.svg";
 import Floor5SVG from "../assets/5thfloormap.svg";
-import { isRoomReserved } from "./RoomList";
+import { isRoomReserved } from "../utils/roomUtils";
 
 /**
  * RoomMap component renders an interactive SVG map of a floor with room color coding

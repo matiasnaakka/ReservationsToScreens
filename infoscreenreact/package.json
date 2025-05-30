@@ -6,7 +6,7 @@
   "homepage": "https://matiasnaakka.github.io/Reservationstatus",
   "scripts": {
     "dev": "vite",
-    "build": "npm run resize-images && vite build",
+    "build": "npm run resize-images && vite build --emptyOutDir",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "predeploy": "npm run build",

@@ -5,8 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm i && npm run dev",
-    "dev": " vite --port 3000 --open --host",
-    "build": " vite build --outDir ./build --emptyOutDir --base roomscontentmanagement/ ",
+    "dev": " vite --port 3007 --open --host",
+    "build": " vite build --outDir ../production/roomsmanagement --emptyOutDir --base roomscontentmanagement/ ",
     "lint": "eslint .",
     "preview": "vite preview"
   },

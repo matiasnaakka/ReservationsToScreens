@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:3000/";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3003/";
 const API_KEY = import.meta.env.VITE_API_KEY;
 
 export const fetchAllRooms = async (floor, startDate, endDate) => {

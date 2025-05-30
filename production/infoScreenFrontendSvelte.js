@@ -1,5 +1,5 @@
-const express = require('express');
-const {createServer} = require('http');
+import express from 'express';
+import { createServer } from 'http';
 
 const app = express();
 const http = createServer(app);
@@ -28,4 +28,4 @@ http.on('error', (error) => {
   logger.error('File server error:', error);
 });
 
-module.exports = app;
+export default app;

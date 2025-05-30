@@ -1,5 +1,5 @@
-const express = require('express');
-const {createServer} = require('http');
+import express from 'express';
+import { createServer } from 'http';
 
 const app = express();
 const http = createServer(app);
@@ -11,7 +11,7 @@ app.use(express.static('roomsmanagement'));
 
 app.get('*', (_req, res) => {
   try {
-    res.sendFile('index.html', {root: 'roomsmanagement'});
+    res.sendFile('index.html', { root: 'roomsmanagement' });
   } catch (error) {
     logger.error('Error serving index.html:', error);
     res.status(500).json('Error serving application');
@@ -28,4 +28,4 @@ http.on('error', (error) => {
   logger.error('File server error:', error);
 });
 
-module.exports = app;
+export default app;

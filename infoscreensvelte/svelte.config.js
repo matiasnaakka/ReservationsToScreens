@@ -6,8 +6,8 @@ const config = {
 	preprocess: vitePreprocess(),
 	kit: {
 		adapter: adapter({
-			pages: '../production/infoscreenFrontendSvelte',
-			assets: '../production/infoscreenFrontendSvelte',
+			pages: '../production/infoScreenFrontendSvelte',
+			assets: '../production/infoScreenFrontendSvelte',
 			fallback: 'index.html',
 			precompress: false,
 			strict: false

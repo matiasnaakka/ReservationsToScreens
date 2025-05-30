@@ -3,7 +3,7 @@ import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const API_KEY = import.meta.env.VITE_APP_API_KEY;
-const API_URL = import.meta.env.VITE_APP_URL_PATH;
+const API_URL = import.meta.env.VITE_APP_API_URL;
 
 const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => {
   const [expandedRoom, setExpandedRoom] = useState(null);

@@ -11,7 +11,7 @@ const Setup = memo(() => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  const API_URL = import.meta.env.VITE_APP_URL_PATH;
+  const API_URL = import.meta.env.VITE_APP_API_URL;
   const API_KEY = import.meta.env.VITE_APP_API_KEY;
 
   /**

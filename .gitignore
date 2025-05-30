@@ -24,5 +24,7 @@ vite.config.ts.timestamp-*
 
 production/infoscreenFrontendSvelte/*
 production/infoscreenFrontend/*
+production/infoScreenFrontendSvelte/*
+production/infoScreenFrontend/*
 production/roomsManagement/*
 infoscreenreact/.cache

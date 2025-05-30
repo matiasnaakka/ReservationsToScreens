@@ -59,13 +59,16 @@ app.post('/api/login', async (req, res) => {
     });
     const data = await response.json();
 
-    if (data.message === 'invalid username or password') {
+    if ( data.message === 'invalid username or password' ) {
+      logger.warn('Invalid login attempt', { username });
       return res.status(401).json({ message: 'Invalid username or password.' });
     }
-    if (data.staff === true) {
-      return res.status(403).json({ message: 'Staff accounts are not allowed to login.' });
+    if (data.staff === false) {
+      logger.warn('Non staff login attempt', { username });
+      return res.status(403).json({ message: 'non staff accounts are not allowed to login.' });
     }
-    if (data.user && data.staff === false) {
+    if ( data.user && data.staff === true ) {
+      logger.info('User logged in successfully', { username: data.user });
       const token = jwt.sign(
         { username: data.user, staff: data.staff },
         process.env.JWT_SECRET || 'default_jwt_secret',

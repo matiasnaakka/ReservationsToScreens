@@ -6,6 +6,7 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "npm install && concurrently \"npm run dev:backend\" \"npm run dev:RoomManagementFrontend\" \"npm run dev:infoscreen-react\" \"npm run dev:infoscreen-svelte\" \"npm run dev:api\"",
+    "devManagement": "concurrently \"npm run dev:RoomManagementFrontend\" \"npm run dev:api\" ",
     "dev:backend": "cd production && npm install && npm run dev",
     "dev:RoomManagementFrontend": "cd RoomManagementFrontend && npm install && npm run dev",
     "dev:infoscreen-react": "cd infoscreenreact && npm install && npm run dev",

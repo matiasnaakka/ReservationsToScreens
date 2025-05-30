@@ -80,6 +80,23 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+/**
+ * POST /api/token/validate
+ * Checks if a JWT token is valid and not expired.
+ */
+app.post('/api/token/validate', (req, res) => {
+  const { token } = req.body;
+  if (!token) {
+    return res.status(400).json({ valid: false, message: 'Token is required.' });
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default_jwt_secret');
+    return res.json({ valid: true, decoded });
+  } catch (err) {
+    return res.status(401).json({ valid: false, message: 'Invalid or expired token.' });
+  }
+});
+
 // Mongo yhteys ja reitit
 connectMongo().then(() => {
   const apiKey = process.env.PASSWORDMETROPOLIA;

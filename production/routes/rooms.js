@@ -131,12 +131,15 @@ export default (apiKey) => {
       });
 
       const formattedDetails = details ? details.trim() : null;
-      const roomsDoc = await db.collection('MetropoliaData').doc('rooms').get();
-      if (!roomsDoc.exists) {
+      // Use Mongoose to fetch all rooms
+      const allRoomsArr = await Room.find({});
+      if (!allRoomsArr.length) {
         return res.status(404).json({ message: 'Rooms data not found' });
       }
 
-      const allRooms = roomsDoc.data().rooms || {};
+      // Convert array to object keyed by roomNumber for compatibility
+      const allRooms = {};
+      allRoomsArr.forEach(room => { allRooms[room.roomNumber] = room.toObject(); });
 
       // Extract unique metadata
       const metadata = {
@@ -191,14 +194,9 @@ export default (apiKey) => {
         );
       });
 
-      // Fetch business hours
-      const businessHoursDoc = await db
-        .collection('MetropoliaData')
-        .doc('businesshours')
-        .get();
-      const businessHours = businessHoursDoc.exists
-        ? businessHoursDoc.data()
-        : { campuses: [] };
+      // Fetch business hours from MongoDB
+      const businessHoursDoc = await BusinessHours.findOne({});
+      const businessHours = businessHoursDoc ? businessHoursDoc.toObject() : { campuses: [] };
 
       const enrichedRooms = await Promise.all(
         filteredRooms.map(async (room) => {

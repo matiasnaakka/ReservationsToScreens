@@ -4,11 +4,11 @@ import svgr from 'vite-plugin-svgr';
 import compression from 'vite-plugin-compression';
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer';
 import path from 'path';
- 
+
 // Determine if we are in production (GitHub Pages) or local development
 const isProduction = process.env.NODE_ENV === 'production';
 const isCI = process.env.CI === 'true'; // Detect GitHub Actions
- 
+
 export default defineConfig({
   plugins: [
     react(),
@@ -17,14 +17,14 @@ export default defineConfig({
         icon: true,
       },
     }),
- 
+
     // Use gzip instead of brotli for GitHub Pages compatibility
     isProduction &&
       compression({
         algorithm: 'gzip',
         ext: '.gz',
       }),
- 
+
     // ⚠️ Disable ViteImageOptimizer in GitHub Actions (CI/CD)
     !isCI &&
       ViteImageOptimizer({
@@ -52,14 +52,14 @@ export default defineConfig({
         cacheLocation: path.resolve(__dirname, '.cache/vite-plugin-image-optimizer'),
       }),
   ].filter(Boolean), // Removes false/null values to avoid errors
- 
-  base: isProduction ? '/reservationstatus/' : './',
- 
+
+  base:'/',
+
   build: {
     outDir: '../production/infoscreenreact',
     assetsInlineLimit: 4096, // 4kb - files smaller than this will be inlined as base64
     minify: false,
- 
+
     rollupOptions: {
       output: {
         // Use chunking for better caching
@@ -68,7 +68,7 @@ export default defineConfig({
             return 'vendor';
           }
         },
- 
+
         // Optimize asset file names for better caching
         assetFileNames: (assetInfo) => {
           if (assetInfo.name) {

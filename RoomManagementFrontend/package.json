@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm i && npm run dev",
     "dev": " vite --port 3007 --open --host",
-    "build": " vite build --outDir ../production/roomsmanagement --emptyOutDir --base roomscontentmanagement/ ",
+    "build": " vite build --outDir ../production/roomsManagement --emptyOutDir --base roomsmanagement/ ",
     "lint": "eslint .",
     "preview": "vite preview"
   },

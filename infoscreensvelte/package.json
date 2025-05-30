@@ -8,7 +8,7 @@
     "start": "npm run easy",
     "dev": "npm i --force && vite dev --port 3005 --host",
     "api": "cd .. && cd infoscreenopendataapi && npm i --force && npm run dev",
-    "build": "cross-env NODE_ENV=production vite build --outDir ../production/infoscreenFrontendSvelte --emptyOutDir",
+    "build": "cross-env NODE_ENV=production vite build --outDir ../production/infoScreenFrontendSvelte --emptyOutDir",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",

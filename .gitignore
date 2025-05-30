@@ -27,4 +27,5 @@ production/infoscreenFrontend/*
 production/infoScreenFrontendSvelte/*
 production/infoScreenFrontend/*
 production/roomsManagement/*
+production/roomsmanagement/*
 infoscreenreact/.cache

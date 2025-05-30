@@ -4,7 +4,7 @@ import {defineConfig} from 'vite';
 export default defineConfig({
   plugins: [sveltekit()],
   // @ts-expect-error - Vite types are not up-to-date
-  base: process.env.NODE_ENV === 'production' ? '/infoScreenProject' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/svelte' : '/',
   define: {
     __BUILD_TIME__: JSON.stringify(new Date().toISOString())
     // },

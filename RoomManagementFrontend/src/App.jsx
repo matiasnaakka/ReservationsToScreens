@@ -24,7 +24,7 @@ const App = () => {
     setIsAuthenticated(true);
   };
 
-  const basename = import.meta.env.MODE === 'production' ? '/roomscontentmanagement/' : '/';
+  const basename = import.meta.env.MODE === 'production' ? '/roomsmanagement/' : '/';
 
   return (
     <Router basename={basename}>

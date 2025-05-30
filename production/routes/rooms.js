@@ -14,6 +14,7 @@ import {
   utcToFinland,
   finnishToUtc,
 } from '../utils/timezone.js';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
@@ -616,12 +617,25 @@ export default (apiKey) => {
     }
 
     try {
-      const room = await Room.findOneAndUpdate({ roomNumber }, updates, { new: true });
+      // Find the room first
+      let room = await Room.findOne({ roomNumber });
+      
       if (!room) {
         return res.status(404).json({ message: 'Room not found' });
       }
+      
+      // Apply the updates to the found room
+      Object.keys(updates).forEach(key => {
+        room[key] = updates[key];
+      });
+      
+      // Save the updated room
+      await room.save();
+      
       logger.info('Room details updated', { roomNumber, updates });
-      res.json({ message: 'Room updated successfully', room });
+      
+      // Send back the complete updated room document
+      res.json({ message: 'Room updated successfully', room: room.toObject() });
     } catch (error) {
       logger.error('Error updating room details', { error: error.message, roomNumber, updates });
       res.status(500).json({ message: error.message });
@@ -787,9 +801,12 @@ export default (apiKey) => {
     }
   });
 
+  // /api/rooms/validate
   router.post('/api/rooms/validate', async (req, res) => {
-    const { roomNumber } = req.body;
-    if (!roomNumber) return res.status(400).json({ message: 'Room number required' });
+    const { roomNumber } = req.body; // Ensure roomNumber is extracted from the body
+    if (!roomNumber) {
+      return res.status(400).json({ message: 'Room number required' });
+    }
 
     const metropoliaApiKey = process.env.APIKEYMETROPOLIA;
     if (!metropoliaApiKey) {
@@ -798,7 +815,7 @@ export default (apiKey) => {
     }
 
     try {
-      const auth = Buffer.from(`${metropoliaApiKey}:`).toString('base64'); // <-- korjattu
+      const auth = Buffer.from(`${metropoliaApiKey}:`).toString('base64');
       const response = await fetch('https://opendata.metropolia.fi/r1/reservation/building/78025', {
         headers: {
           Authorization: `Basic ${auth}`,
@@ -823,6 +840,26 @@ export default (apiKey) => {
     }
   });
 
+  router.delete('/api/rooms/delete', async (req, res) => {
+    const { roomNumber } = req.body; // Ensure roomNumber is extracted from the body
+
+    if (!roomNumber) {
+      return res.status(400).json({ message: 'Room number is required' });
+    }
+
+    try {
+      const result = await Room.findOneAndDelete({ roomNumber });
+      if (!result) {
+        return res.status(404).json({ message: 'Room not found' });
+      }
+
+      logger.info('Room deleted', { roomNumber });
+      res.json({ message: 'Room deleted successfully', deletedRoom: result });
+    } catch (error) {
+      logger.error('Error deleting room', { error: error.message, roomNumber });
+      res.status(500).json({ message: error.message });
+    }
+  });
 
   return router;
 };

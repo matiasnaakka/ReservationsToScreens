@@ -1,8 +1,13 @@
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import clockIcon from '../assets/clock.png';
+import { useState } from 'react';
+
+const API_URL = import.meta.env.VITE_APP_API_URL;
 
 const CampusAccordion = ({ businessHours, setBusinessHours, saveCampusHours }) => {
+  const token = localStorage.getItem('roomsmanagement_token');
+
   // Handle campus updates
   const handleCampusUpdate = (index, updatedCampus) => {
     setBusinessHours(prev => ({
@@ -37,8 +42,41 @@ const CampusAccordion = ({ businessHours, setBusinessHours, saveCampusHours }) =
 
   // Save campus hours (API)
   const handleSaveCampusHours = async (index, campus) => {
-    if (!campus.shorthand || !campus.hours) return;
-    await saveCampusHours(campus.shorthand, campus.hours);
+    if (!campus || !campus.shorthand || !campus.hours) {
+      console.error('Campus data is missing or incomplete. Cannot save campus hours.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/campus/hours/update`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          apikey: import.meta.env.VITE_APP_API_KEY,
+        },
+        body: JSON.stringify({ 
+          campusShorthand: campus.shorthand, 
+          hours: campus.hours 
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to save campus hours');
+      }
+
+      const data = await response.json();
+      setBusinessHours((prevHours) => {
+        const updatedCampuses = [...prevHours.campuses];
+        updatedCampuses[index] = data.campus;
+        return { ...prevHours, campuses: updatedCampuses };
+      });
+      
+      console.log('Campus hours updated successfully');
+    } catch (error) {
+      console.error(`Error saving campus hours: ${error.message}`);
+    }
   };
 
   return (

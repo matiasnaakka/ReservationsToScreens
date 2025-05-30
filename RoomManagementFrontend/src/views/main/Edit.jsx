@@ -22,10 +22,13 @@ const Edit = memo(() => {
   const fetchRooms = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}/api/rooms/all`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: {
+          Authorization: `Bearer ${token}`,
+          apikey: import.meta.env.VITE_APP_API_KEY
+        }
       });
       if (!response.ok) {
-        throw new Error(`Failed to fetch rooms: ${response.statusText}`);
+        throw new Error('Failed to fetch rooms');
       }
       const roomsArr = await response.json();
       const roomsObj = roomsArr.reduce((acc, room) => {
@@ -33,8 +36,8 @@ const Edit = memo(() => {
         return acc;
       }, {});
       setRooms(roomsObj);
-    } catch (err) {
-      setError(`Error loading rooms: ${err.message}`);
+    } catch (error) {
+      setError(error.message);
     }
   }, []);
 
@@ -44,15 +47,18 @@ const Edit = memo(() => {
   const fetchBusinessHours = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}/api/campuses/hours`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: {
+          Authorization: `Bearer ${token}`,
+          apikey: import.meta.env.VITE_APP_API_KEY
+        }
       });
       if (!response.ok) {
-        throw new Error(`Failed to fetch campus hours: ${response.statusText}`);
+        throw new Error('Failed to fetch business hours');
       }
       const data = await response.json();
       setBusinessHours(data);
-    } catch (err) {
-      setError(`Error loading campus hours: ${err.message}`);
+    } catch (error) {
+      setError(error.message);
     }
   }, []);
 
@@ -80,7 +86,8 @@ const Edit = memo(() => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          apikey: import.meta.env.VITE_APP_API_KEY // Add API key here
         },
         body: JSON.stringify({ roomNumber, updates })
       });
@@ -109,7 +116,8 @@ const Edit = memo(() => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          apikey: import.meta.env.VITE_APP_API_KEY // Add API key here
         },
         body: JSON.stringify({ campusShorthand, hours })
       });

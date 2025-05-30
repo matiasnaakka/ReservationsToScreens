@@ -18,17 +18,22 @@ const Setup = memo(() => {
    * Calls backend API to import data from JSON files
    */
   const importRoomsData = async () => {
-    const response = await fetch(`${API_URL}/api/import/init`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Import failed: ${errorText}`);
+    try {
+      const response = await fetch(`${API_URL}/api/import/init`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          apikey: import.meta.env.VITE_APP_API_KEY,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to import rooms data');
+      }
+      const data = await response.json();
+      setSuccess('Data imported successfully');
+    } catch (error) {
+      setError(error.message);
     }
   };
 

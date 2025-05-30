@@ -12,15 +12,23 @@ const API_URL = import.meta.env.VITE_APP_API_URL;
 /**
  * Protected Route wrapper component
  */
-const ProtectedRoute = ({ isAuthenticated, children }) => {
+const ProtectedRoute = ({ isAuthenticated, authChecking, children }) => {
+  // If still checking auth status, show loading
+  if (authChecking) {
+    return <div className="flex justify-center items-center h-64">Loading...</div>;
+  }
+
+  // Only redirect if auth check is complete and user is not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/" replace />;
   }
+
   return children;
 };
 
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authChecking, setAuthChecking] = useState(true); // Add a loading state
 
   /**
    * Checks if the JWT token is valid by calling the backend
@@ -32,7 +40,10 @@ const App = () => {
     try {
       const response = await fetch(`${API_URL}/api/token/validate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ token }),
       });
       const data = await response.json();
@@ -43,12 +54,17 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    // Start with authChecking=true
+    setAuthChecking(true);
+
     (async () => {
       const valid = await checkTokenValidity();
       setIsAuthenticated(valid);
       if (!valid) {
         localStorage.removeItem('roomsmanagement_token');
       }
+      // Auth check is complete
+      setAuthChecking(false);
     })();
   }, [checkTokenValidity]);
 
@@ -57,7 +73,6 @@ const App = () => {
     setIsAuthenticated(valid);
     if (!valid) {
       localStorage.removeItem('roomsmanagement_token');
-      // Optionally, show a message to the user here
     }
   };
 
@@ -71,12 +86,18 @@ const App = () => {
           <Routes>
             <Route
               path="/"
-              element={<LoginRegister onLoginSuccess={handleLoginSuccess} />}
+              element={
+                isAuthenticated ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <LoginRegister onLoginSuccess={handleLoginSuccess} />
+                )
+              }
             />
             <Route
               path="/dashboard"
               element={
-                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <ProtectedRoute isAuthenticated={isAuthenticated} authChecking={authChecking}>
                   <Dashboard />
                 </ProtectedRoute>
               }
@@ -84,7 +105,7 @@ const App = () => {
             <Route
               path="/setup"
               element={
-                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <ProtectedRoute isAuthenticated={isAuthenticated} authChecking={authChecking}>
                   <Setup />
                 </ProtectedRoute>
               }
@@ -92,7 +113,7 @@ const App = () => {
             <Route
               path="/edit"
               element={
-                <ProtectedRoute isAuthenticated={isAuthenticated}>
+                <ProtectedRoute isAuthenticated={isAuthenticated} authChecking={authChecking}>
                   <Edit />
                 </ProtectedRoute>
               }

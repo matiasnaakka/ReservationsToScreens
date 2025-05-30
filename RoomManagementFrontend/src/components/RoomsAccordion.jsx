@@ -35,21 +35,28 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => 
   };
 
   const validateRoomWithMetropolia = async (roomNumber) => {
-    const response = await fetch(`${API_URL}/api/rooms/validate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ roomNumber }),
-    });
+    try {
+      const response = await fetch(`${API_URL}/api/rooms/validate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          apikey: import.meta.env.VITE_APP_API_KEY, // Ensure API key is included
+        },
+        body: JSON.stringify({ roomNumber }),
+      });
 
-    if (!response.ok) {
-      throw new Error('Room validation failed');
+      if (!response.ok) {
+        const { message } = await response.json();
+        throw new Error(message || 'Room validation failed');
+      }
+
+      const { exists } = await response.json();
+      return exists;
+    } catch (error) {
+      setError(`Validation error: ${error.message}`);
+      throw error;
     }
-
-    const { exists } = await response.json();
-    return exists;
   };
 
 
@@ -95,13 +102,14 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => 
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
+          apikey: import.meta.env.VITE_APP_API_KEY, // Add API key here
         },
         body: JSON.stringify(newRoom),
       });
 
       if (!response.ok) {
-        const { message } = await response.json();
-        throw new Error(message || 'Failed to add room.');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add room.');
       }
 
       const { room } = await response.json();
@@ -116,8 +124,8 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => 
 
   // Save room (API)
   const handleSaveRoom = async (roomNumber, updatedRoom) => {
-    if (!updatedRoom) {
-      setError('Room data is missing. Cannot save changes.');
+    if (!updatedRoom || !roomNumber) {
+      setError('Room data or room number is missing. Cannot save changes.');
       return;
     }
     setLoading(true);
@@ -125,15 +133,43 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => 
     setSuccess(null);
 
     try {
-      await saveRoom(roomNumber, updatedRoom);
-    } catch (err) {
-      setError('Error saving room.');
+      const response = await fetch(`${API_URL}/api/rooms/update`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          apikey: import.meta.env.VITE_APP_API_KEY,
+        },
+        body: JSON.stringify({ roomNumber, updates: updatedRoom }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to save room');
+      }
+      
+      const data = await response.json();
+      
+      // Update with the room data from response, not the entire response object
+      if (data.room) {
+        setRooms((prevRooms) => ({
+          ...prevRooms,
+          [roomNumber]: data.room
+        }));
+      }
+      
+      setSuccess('Room saved successfully');
+    } catch (error) {
+      setError(error.message);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteRoom = async (roomNumber) => {
+    if (!roomNumber) {
+      setError('Room number is missing. Cannot delete room.');
+      return;
+    }
     if (window.confirm(`Are you sure you want to delete room ${roomNumber}?`)) {
       setLoading(true);
       setError(null);
@@ -144,28 +180,28 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => 
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
+            apikey: import.meta.env.VITE_APP_API_KEY, // Ensure API key is included
           },
-          body: JSON.stringify({ roomNumber })
+          body: JSON.stringify({ roomNumber }), // Ensure roomNumber is sent in the body
         });
-
         if (!response.ok) {
           const { message } = await response.json();
-          throw new Error(message || 'Failed to delete room.');
+          throw new Error(message || 'Failed to delete room');
         }
-
-        const updatedRooms = { ...rooms };
-        delete updatedRooms[roomNumber];
-        setRooms(updatedRooms);
-        setSuccess(`Room ${roomNumber} deleted successfully.`);
-      } catch (err) {
-        setError(`Error deleting room: ${err.message}`);
+        setSuccess('Room deleted successfully');
+        setRooms((prevRooms) => {
+          const updatedRooms = { ...prevRooms };
+          delete updatedRooms[roomNumber];
+          return updatedRooms;
+        });
+      } catch (error) {
+        setError(`Error deleting room: ${error.message}`);
       } finally {
         setLoading(false);
       }
     }
   };
-
 
   return (
     <Accordion>
@@ -177,15 +213,15 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => 
       >
         <div className="flex justify-between items-center w-full pr-4">
           <h3 className="text-xl font-semibold">Rooms</h3>
-          <button
+          <div
             onClick={(e) => {
               e.stopPropagation();
               handleAddRoom();
             }}
-            className="px-3 py-1 bg-green text-white rounded hover:bg-green-700 text-sm"
+            className="px-3 py-1 bg-green text-white rounded hover:bg-green-700 text-sm cursor-pointer"
           >
             Add new Room
-          </button>
+          </div>
         </div>
       </AccordionSummary>
       <AccordionDetails>
@@ -283,10 +319,8 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => 
                         checked={room.reservableStudents === 'true'}
                         onChange={(e) => {
                           const newValue = e.target.checked ? 'true' : 'false';
-                          const updatedRoom = { reservableStudents: newValue };
-
-                          handleRoomUpdate(roomNumber, updatedRoom); // Päivitä local state
-                          handleSaveRoom(roomNumber, updatedRoom); // Tallenna Firestoreen
+                          // Update local state only, don't save immediately to avoid partial updates
+                          handleRoomUpdate(roomNumber, { ...room, reservableStudents: newValue });
                         }}
                         className="border rounded ml-4 bg-white"
                       />
@@ -300,10 +334,8 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => 
                         checked={room.reservableStaff === 'true'}
                         onChange={(e) => {
                           const newValue = e.target.checked ? 'true' : 'false';
-                          const updatedRoom = { reservableStaff: newValue };
-
-                          handleRoomUpdate(roomNumber, updatedRoom); // Päivitä local state
-                          handleSaveRoom(roomNumber, updatedRoom); // Tallenna Firestoreen
+                          // Update local state only, don't save immediately to avoid partial updates
+                          handleRoomUpdate(roomNumber, { ...room, reservableStaff: newValue });
                         }}
                         className="border rounded ml-4 bg-white"
                       />
@@ -312,7 +344,7 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => 
                 </div>
                 <div className="flex justify-end mt-4 space-x-2">
                   <button
-                    onClick={() => handleSaveRoom(roomNumber, rooms[roomNumber])} // Lähetetään päivitetty huoneen tiedot
+                    onClick={() => handleSaveRoom(roomNumber, rooms[roomNumber])}
                     disabled={loading}
                     className={`px-4 py-2 ${loading ? ' bg-gray' : ' bg-blue hover:bg-indigo-400'} text-white rounded transition-colors`}
                   >

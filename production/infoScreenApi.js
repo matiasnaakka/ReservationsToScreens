@@ -48,6 +48,7 @@ app.post('/api/login', async (req, res) => {
       process.env.JWT_SECRET || 'default_jwt_secret',
       { expiresIn: '2h' }
     );
+    logger.info('Dev user logged in successfully', { username: devUser });
     return res.json({ token });
   }
 

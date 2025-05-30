@@ -111,13 +111,4 @@ LoginRegister.propTypes = {
 };
 
 export default LoginRegister;
-      </form>
-    </div>
-  );
-};
 
-LoginRegister.propTypes = {
-  onLoginSuccess: PropTypes.func.isRequired
-};
-
-export default LoginRegister;

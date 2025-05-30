@@ -5,13 +5,20 @@
   "description": "Root package for managing all ReservationsToScreens subprojects",
   "scripts": {
     "start": "npm run dev",
-    "dev": "npm install && concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:infoscreen-react\" \"npm run dev:infoscreen-svelte\" \"npm run dev:api\"",
-    "dev:backend": "cd backend-api && npm install && npm run dev",
-    "dev:frontend": "cd RoomManagementFrontend && npm install && npm run dev",
+    "dev": "npm install && concurrently \"npm run dev:backend\" \"npm run dev:RoomManagementFrontend\" \"npm run dev:infoscreen-react\" \"npm run dev:infoscreen-svelte\" \"npm run dev:api\"",
+    "dev:backend": "cd production && npm install && npm run dev",
+    "dev:RoomManagementFrontend": "cd RoomManagementFrontend && npm install && npm run dev",
     "dev:infoscreen-react": "cd infoscreenreact && npm install && npm run dev",
     "dev:infoscreen-svelte": "cd infoscreensvelte && npm install && npm run dev",
     "dev:api": "cd production && npm run dev",
-    "install:all": "concurrently \"npm i\" \"cd backend-api && npm i\" \"cd RoomManagementFrontend && npm i\" \"cd infoscreenreact && npm i\" \"cd infoscreensvelte && npm i\""
+    "install:all": "concurrently \"npm i\" \"cd backend-api && npm i\" \"cd RoomManagementFrontend && npm i\" \"cd infoscreenreact && npm i\" \"cd infoscreensvelte && npm i\"",
+    "build:all": "concurrently  \"npm run build:RoomManagementFrontend\" \"npm run build:infoscreen-react\" \"npm run build:infoscreen-svelte\"",
+    "build:backend": "cd production && npm run build",
+    "build:RoomManagementFrontend": "cd RoomManagementFrontend && npm run build",
+    "build:infoscreen-react": "cd infoscreenreact && npm run build",
+    "build:infoscreen-svelte": "cd infoscreensvelte && npm run build"
+
+
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

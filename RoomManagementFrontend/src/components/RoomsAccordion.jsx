@@ -5,10 +5,57 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 const API_URL = import.meta.env.VITE_APP_API_URL;
 const token = localStorage.getItem('roomsmanagement_token');
 
+/**
+ * Validates room input fields based on specific requirements
+ * @param {string} field - The field name to validate
+ * @param {string} value - The value to validate
+ * @returns {boolean} - Whether the value is valid for the given field
+ */
+const validateField = (field, value) => {
+  const validators = {
+    // Room number: exactly 6 letters/numbers allowed
+    roomNumber: (val) => val === '' || /^[a-zA-Z0-9]{0,6}$/.test(val),
+    // Floor: one number only
+    floor: (val) => val === '' || /^[0-9]{0,1}$/.test(val),
+    // Building: exactly 2 letters only, no numbers
+    building: (val) => val === '' || /^[\p{L}]{0,2}$/u.test(val),
+    // Wing: one letter only
+    wing: (val) => val === '' || /^[\p{L}]{0,1}$/u.test(val),
+    // Persons: max 3 numbers, only numbers
+    persons: (val) => val === '' || /^[0-9]{0,3}$/.test(val),
+    // Square meters: numbers only
+    squareMeters: (val) => val === '' || /^[0-9]*$/.test(val),
+    // Details: text only allowed (letters, spaces, and common punctuation) - Unicode support added
+    details: (val) => val === '' || /^[\p{L}0-9\s.,;:!?-]*$/u.test(val),
+  };
+
+  return validators[field] ? validators[field](value) : true;
+};
+
+/**
+ * Gets validation error message for a field
+ * @param {string} field - The field name
+ * @returns {string} - The validation error message
+ */
+const getValidationMessage = (field) => {
+  const messages = {
+    roomNumber: 'Room number must be exactly 6 characters (letters or numbers)',
+    floor: 'Floor must be a single digit',
+    building: 'Building must be exactly 2 letters',
+    wing: 'Wing must be a single letter',
+    persons: 'Persons must be up to 3 digits',
+    squareMeters: 'Square meters must be a number',
+    details: 'Details must contain only text characters',
+  };
+
+  return messages[field] || 'Invalid input';
+};
+
 const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => {
   const [expandedRoom, setExpandedRoom] = useState(null);
   const [loading, setLoading] = useState(false);
   const [sortedRooms, setSortedRooms] = useState([]);
+  const [validationErrors, setValidationErrors] = useState({});
 
   useEffect(() => {
     const sorted = Object.entries(rooms).sort(([aKey, aRoom], [bKey, bRoom]) => {
@@ -22,14 +69,39 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => 
     });
     setSortedRooms(sorted);
   }, [rooms]);
+  // Handle room updates with validation
+  const handleRoomUpdate = (roomNumber, updatedField) => {
+    // Get the field name that's being updated (the only key in the object)
+    const changedField = Object.keys(updatedField)[0];
+    const newValue = updatedField[changedField];
+    
+    if (changedField) {
+      // Validate the field if it has a validator
+      if (!validateField(changedField, newValue)) {
+        // Set validation error
+        setValidationErrors(prev => ({
+          ...prev,
+          [`${roomNumber}-${changedField}`]: getValidationMessage(changedField)
+        }));
+        
+        // Don't update if invalid
+        return;
+      }
+      
+      // Clear validation error if valid
+      setValidationErrors(prev => {
+        const updated = { ...prev };
+        delete updated[`${roomNumber}-${changedField}`];
+        return updated;
+      });
+    }
 
-  // Handle room updates
-  const handleRoomUpdate = (roomNumber, updatedRoom) => {
+    // Update the room if validation passes
     setRooms((prevRooms) => ({
       ...prevRooms,
       [roomNumber]: {
         ...prevRooms[roomNumber],
-        ...updatedRoom,
+        ...updatedField,
       },
     }));
   };
@@ -110,10 +182,12 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => 
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to add room.');
-      }
-
-      const { room } = await response.json();
-      handleRoomUpdate(room.roomNumber, room);
+      }      const { room } = await response.json();
+      // Direct update to room state to avoid validation issues with new room
+      setRooms((prevRooms) => ({
+        ...prevRooms,
+        [room.roomNumber]: room
+      }));
       setSuccess(`Room ${room.roomNumber} added successfully.`);
     } catch (error) {
       setError(`Error adding room: ${error.message}`);
@@ -247,71 +321,104 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => 
                 </div>
               </AccordionSummary>
               <AccordionDetails className="bg-gray-50">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex flex-col">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">                  <div className="flex flex-col">
                     <label className="text-sm text-gray-600 mb-1">Room Number</label>
                     <input
                       type="text"
-                      value={room.roomNumber !== undefined ? room.roomNumber : ''}
-                      onChange={(e) => handleRoomUpdate(roomNumber, { ...room, roomNumber: e.target.value || '' })}
+                      value={room.roomNumber || ''}
+                      onChange={(e) => handleRoomUpdate(roomNumber, { roomNumber: e.target.value })}
                       className="border rounded px-3 py-2 bg-white"
                     />
+                    {validationErrors[`${roomNumber}-roomNumber`] && (
+                      <span className="text-red-500 text-xs mt-1">
+                        {validationErrors[`${roomNumber}-roomNumber`]}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col">
                     <label className="text-sm text-gray-600 mb-1">Floor</label>
                     <input
                       type="text"
-                      value={room.floor !== undefined ? room.floor : ''}
-                      onChange={(e) => handleRoomUpdate(roomNumber, { ...room, floor: e.target.value || '' })}
+                      value={room.floor || ''}
+                      onChange={(e) => handleRoomUpdate(roomNumber, { floor: e.target.value })}
                       className="border rounded px-3 py-2 bg-white"
                     />
+                    {validationErrors[`${roomNumber}-floor`] && (
+                      <span className="text-red-500 text-xs mt-1">
+                        {validationErrors[`${roomNumber}-floor`]}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col">
                     <label className="text-sm text-gray-600 mb-1">Building</label>
                     <input
                       type="text"
-                      value={room.building !== undefined ? room.building : ''}
-                      onChange={(e) => handleRoomUpdate(roomNumber, { ...room, building: e.target.value || '' })}
+                      value={room.building || ''}
+                      onChange={(e) => handleRoomUpdate(roomNumber, { building: e.target.value })}
                       className="border rounded px-3 py-2 bg-white"
                     />
+                    {validationErrors[`${roomNumber}-building`] && (
+                      <span className="text-red-500 text-xs mt-1">
+                        {validationErrors[`${roomNumber}-building`]}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col">
                     <label className="text-sm text-gray-600 mb-1">Wing</label>
                     <input
                       type="text"
-                      value={room.wing !== undefined ? room.wing : ''}
-                      onChange={(e) => handleRoomUpdate(roomNumber, { ...room, wing: e.target.value || '' })}
+                      value={room.wing || ''}
+                      onChange={(e) => handleRoomUpdate(roomNumber, { wing: e.target.value })}
                       className="border rounded px-3 py-2 bg-white"
                     />
+                    {validationErrors[`${roomNumber}-wing`] && (
+                      <span className="text-red-500 text-xs mt-1">
+                        {validationErrors[`${roomNumber}-wing`]}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col">
                     <label className="text-sm text-gray-600 mb-1">Persons</label>
                     <input
                       type="text"
-                      value={room.persons !== undefined ? room.persons : ''}
-                      onChange={(e) => handleRoomUpdate(roomNumber, { ...room, persons: e.target.value || '' })}
+                      value={room.persons || ''}
+                      onChange={(e) => handleRoomUpdate(roomNumber, { persons: e.target.value })}
                       className="border rounded px-3 py-2 bg-white"
                     />
+                    {validationErrors[`${roomNumber}-persons`] && (
+                      <span className="text-red-500 text-xs mt-1">
+                        {validationErrors[`${roomNumber}-persons`]}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col">
                     <label className="text-sm text-gray-600 mb-1">Square Meters</label>
                     <input
                       type="text"
-                      value={room.squareMeters !== undefined ? room.squareMeters : ''}
-                      onChange={(e) => handleRoomUpdate(roomNumber, { ...room, squareMeters: e.target.value || '' })}
+                      value={room.squareMeters || ''}
+                      onChange={(e) => handleRoomUpdate(roomNumber, { squareMeters: e.target.value })}
                       className="border rounded px-3 py-2 bg-white"
                     />
+                    {validationErrors[`${roomNumber}-squareMeters`] && (
+                      <span className="text-red-500 text-xs mt-1">
+                        {validationErrors[`${roomNumber}-squareMeters`]}
+                      </span>
+                    )}
                   </div>
                   <div className="flex flex-col">
                     <label className="text-sm text-gray-600 mb-1">Details</label>
                     <input
                       type="text"
-                      value={room.details !== undefined ? room.details : ''}
-                      onChange={(e) => handleRoomUpdate(roomNumber, { ...room, details: e.target.value || '' })}
+                      value={room.details || ''}
+                      onChange={(e) => handleRoomUpdate(roomNumber, { details: e.target.value })}
                       className="border rounded px-3 py-2 bg-white"
                     />
-                  </div>
-                  <div className="flex flex-col">
+                    {validationErrors[`${roomNumber}-details`] && (
+                      <span className="text-red-500 text-xs mt-1">
+                        {validationErrors[`${roomNumber}-details`]}
+                      </span>
+                    )}
+                  </div>                  <div className="flex flex-col">
                     <div>
                       <label className="text-sm text-gray-600 mb-1">Reservable by Students</label>
                       <input
@@ -320,7 +427,7 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => 
                         onChange={(e) => {
                           const newValue = e.target.checked ? 'true' : 'false';
                           // Update local state only, don't save immediately to avoid partial updates
-                          handleRoomUpdate(roomNumber, { ...room, reservableStudents: newValue });
+                          handleRoomUpdate(roomNumber, { reservableStudents: newValue });
                         }}
                         className="border rounded ml-4 bg-white"
                       />
@@ -335,7 +442,7 @@ const RoomsAccordion = ({ rooms, setRooms, setError, setSuccess, saveRoom }) => 
                         onChange={(e) => {
                           const newValue = e.target.checked ? 'true' : 'false';
                           // Update local state only, don't save immediately to avoid partial updates
-                          handleRoomUpdate(roomNumber, { ...room, reservableStaff: newValue });
+                          handleRoomUpdate(roomNumber, { reservableStaff: newValue });
                         }}
                         className="border rounded ml-4 bg-white"
                       />

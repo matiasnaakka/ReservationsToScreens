@@ -18,7 +18,7 @@
     "build:RoomManagementFrontend": "cd RoomManagementFrontend && npm run build",
     "build:infoscreen-react": "cd infoscreenreact && npm run build",
     "build:infoscreen-svelte": "cd infoscreensvelte && npm run build",
-    "newVersion": "git pull && npm run build:all && npm run pm2:start",
+    "newVersion": "git pull && npm run build:all && pm2 delete all && npm run pm2:start",
     "pm2:start": "cd production && npm run pm2:start",
     "pm2:stop": "cd production && npm run pm2:stop",
     "pm2:delete": "cd production && npm run pm2:delete",

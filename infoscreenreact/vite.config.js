@@ -23,11 +23,11 @@ export default defineConfig({
       compression({
         algorithm: 'gzip',
         ext: '.gz',
-      }),
-
-    // ⚠️ Disable ViteImageOptimizer in GitHub Actions (CI/CD)
+      }),    // ⚠️ Disable ViteImageOptimizer in GitHub Actions (CI/CD)
     !isCI &&
       ViteImageOptimizer({
+        // Exclude SVG files to preserve ID attributes needed for DOM manipulation
+        exclude: /\.svg$/,
         png: {
           quality: 80,
           compressionLevel: 9,

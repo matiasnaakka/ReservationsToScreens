@@ -95,14 +95,9 @@ export default (apiKey) => {
       res.status(500).json({ message: error.message });
     }
   });
-
   ///api/rooms/freespace
   router.get('/api/rooms/freespace', async (req, res) => {
-    if (req.headers.apikey !== apiKey) {
-      logger.warn('Unauthorized access attempt', { ip: req.ip, path: req.path });
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-
+    // API key is already verified by auth middleware
     const {
       floor,
       building,
@@ -361,11 +356,7 @@ export default (apiKey) => {
 
   // /api/rooms/freespace-full
   router.get('/api/rooms/freespace-full', async (req, res) => {
-    if (req.headers.apikey !== apiKey) {
-      logger.warn('Unauthorized access attempt', { ip: req.ip, path: req.path });
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-
+    // API key is already verified by auth middleware
     const {
       floor,
       building,
@@ -404,7 +395,6 @@ export default (apiKey) => {
       allRoomsArr.forEach(room => {
         allRooms[room.roomNumber] = room.toObject();
       });
-
 
       // Extract unique metadata
       const metadata = {
@@ -461,7 +451,6 @@ export default (apiKey) => {
 
       const businessHoursDoc = await BusinessHours.findOne({});
       const businessHours = businessHoursDoc ? businessHoursDoc.toObject() : { campuses: [] };
-
 
       const enrichedRooms = await Promise.all(
         filteredRooms.map(async (room) => {

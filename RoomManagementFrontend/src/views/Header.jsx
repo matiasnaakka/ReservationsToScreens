@@ -1,14 +1,30 @@
 import { memo } from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import universityIcon from '../assets/university.png';
 
 /**
  * Header component that displays the main navigation bar
  * @param {Object} props - Component props
  * @param {string} props.title - The title to display in the header
+ * @param {boolean} props.isAuthenticated - Whether the user is authenticated
+ * @param {Function} props.onLogout - Logout handler function
  * @returns {JSX.Element} Header component
  */
-const Header = memo(({ title = 'Room Management' }) => {
+const Header = memo(({ title = 'Room Management', isAuthenticated = false, onLogout }) => {
+  const navigate = useNavigate();
+  
+  /**
+   * Handles user logout
+   * Clears the authentication token and redirects to login page
+   */
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    }
+    navigate('/', { replace: true });
+  };
+
   return (
     <header role="banner">
       <nav
@@ -28,14 +44,22 @@ const Header = memo(({ title = 'Room Management' }) => {
             />
           </div>
 
-          {/* Title Section */}
-          <div className="mt-4 sm:mt-0">
+          {/* Title and Logout Section */}
+          <div className="flex items-center space-x-4">
             <h1
               className="text-2xl font-bold text-gray-800 text-center sm:text-left"
               tabIndex="0"
             >
               {title}
-            </h1>
+            </h1>            {isAuthenticated && (
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-orange hover:bg-amber-600 text-white rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange"
+                aria-label="Logout"
+              >
+                Logout
+              </button>
+            )}
           </div>
         </div>
       </nav>
@@ -48,7 +72,9 @@ Header.displayName = 'Header';
 
 // PropTypes for type checking
 Header.propTypes = {
-  title: PropTypes.string
+  title: PropTypes.string,
+  isAuthenticated: PropTypes.bool,
+  onLogout: PropTypes.func
 };
 
 // Default props

@@ -37,15 +37,7 @@ const Dashboard = memo(() => {
         <p className="text-gray-600">
           Welcome to the room management system. Choose an option below to get started.
         </p>
-      </header>
-
-      <main className="grid gap-6 md:grid-cols-2">
-        <NavigationCard
-          to="/setup"
-          title="System Setup"
-          description="Initialize and configure the room management system. Import initial data and configure system settings."
-        />
-
+      </header>      <main className="grid gap-6 md:grid-cols-1">
         <NavigationCard
           to="/edit"
           title="Edit Data"

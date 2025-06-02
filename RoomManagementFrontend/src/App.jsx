@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
 import LoginRegister from './views/main/LoginRegister';
-import Setup from './views/main/Setup';
 import Edit from './views/main/Edit';
 import Dashboard from './views/main/Dashboard';
 import Header from './views/Header';
@@ -67,7 +66,6 @@ const App = () => {
       setAuthChecking(false);
     })();
   }, [checkTokenValidity]);
-
   const handleLoginSuccess = async () => {
     const valid = await checkTokenValidity();
     setIsAuthenticated(valid);
@@ -76,12 +74,21 @@ const App = () => {
     }
   };
 
+  /**
+   * Handles user logout
+   * Clears the authentication token and updates authentication state
+   */
+  const handleLogout = () => {
+    localStorage.removeItem('roomsmanagement_token');
+    setIsAuthenticated(false);
+  };
+
   const basename = import.meta.env.MODE === 'production' ? '/roomsmanagement/' : '/';
 
   return (
     <Router basename={basename}>
       <div className="min-h-screen bg-gray-100">
-        <Header />
+        <Header isAuthenticated={isAuthenticated} onLogout={handleLogout} />
         <main className="px-4 py-6 mx-auto max-w-7xl">
           <Routes>
             <Route
@@ -99,14 +106,6 @@ const App = () => {
               element={
                 <ProtectedRoute isAuthenticated={isAuthenticated} authChecking={authChecking}>
                   <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/setup"
-              element={
-                <ProtectedRoute isAuthenticated={isAuthenticated} authChecking={authChecking}>
-                  <Setup />
                 </ProtectedRoute>
               }
             />

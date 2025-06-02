@@ -8,7 +8,7 @@ export default (apiKey) => (req, res, next) => {
   }
   console.log(req.path)
   // Then check JWT token (except for /api/login and /api/token/validate routes)
-  if (req.path !== '/api/login' && req.path !== '/api/token/validate' && req.path !== '/rooms/freespace-full' && req.path !== '/api/rooms/reservations' && req.path !== '/rooms/freespace' && req.path !== '/api/rooms/all' && req.path !== '/api/campuses/hours') {
+  if (req.path !== '/api/login' && req.path !== '/api/token/validate' && req.path !== '/rooms/freespace-full' && req.path !== '/rooms/freespace' && req.path !== '/rooms/all' && req.path !== '/campuses/hours') {
     const token = req.headers.authorization?.split(' ')[1];
 
     if (!token) {

@@ -17,6 +17,7 @@ const LoginRegister = ({ onLoginSuccess }) => {
   const [error, setError] = useState(null);
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   /**
    * Handles authentication using backend API
@@ -61,8 +62,7 @@ const LoginRegister = ({ onLoginSuccess }) => {
 
   return (
     <div className="max-w-md mx-auto">
-      <form onSubmit={handleAuth} className="mb-6">
-        <div className="mb-4">
+      <form onSubmit={handleAuth} className="mb-6">        <div className="mb-4">
           <label htmlFor="username" className="block text-sm font-medium text-gray-700">
             Username
           </label>
@@ -73,6 +73,7 @@ const LoginRegister = ({ onLoginSuccess }) => {
             autoComplete="username"
             onChange={(e) => setUsername(e.target.value)}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            placeholder="Enter your Metropolia username"
             required
             disabled={loading}
           />
@@ -81,16 +82,28 @@ const LoginRegister = ({ onLoginSuccess }) => {
           <label htmlFor="password" className="block text-sm font-medium text-gray-700">
             Password
           </label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            autoComplete="current-password"
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            required
-            disabled={loading}
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              value={password}
+              autoComplete="current-password"
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="Enter your Metropolia password"
+              required
+              disabled={loading}
+            />
+            <button
+              type="button"
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              <span className="text-sm text-gray-700">
+                {showPassword ? "Hide" : "Show"}
+              </span>
+            </button>
+          </div>
         </div>
         {error && <p className="text-red-500 text-sm" role="alert">{error}</p>}
         <button

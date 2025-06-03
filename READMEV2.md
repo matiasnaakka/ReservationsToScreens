@@ -249,10 +249,10 @@ DEV_PASSWORD="dev_password_here"
 
 ---
 
-## Contact Information
-- **Primary Maintainer:** [Add Name & Email Here]
-- **Backup Contact:** [Add Name & Email Here]
-- **Escalation:** [Add escalation procedure or Slack channel]
+## Contributors
+
+- [Aleksi Nokelainen](https://github.com/Krugou)
+- [Matias Naakka](https://github.com/matiasnaakka)
 
 ---
 

@@ -14,7 +14,7 @@ Realtime room reservations is a collaboration project made by Aleksi Nokelainen 
 
 ## Architecture
 
-The project is structured into four main components:
+The project is structured into five main components:
 
 1. **Backend API**:
    - Provides data and functionality for the frontend applications.
@@ -30,12 +30,19 @@ The project is structured into four main components:
 3. **InfoScreenReact**:
    - A React-based web application for displaying room reservations.
    - Includes features like QR code integration and room filtering.
-   - Designed for both large displays
+   - Designed for both large displays and smaller screens
 
 4. **RoomManagementFrontend**:
    - A React-based web application for managing room and campus data.
    - Allows administrators to configure room details and business hours.
-   - Integrates with Firebase for authentication and data storage.
+   - Integrates with authentication for secure access to management features.
+
+5. **Production**:
+   - Contains the production-ready code deployed on the server.
+   - Includes the Express.js API server with MongoDB integration.
+   - Features authentication middleware for securing API endpoints.
+   - Contains PM2 configuration for process management in production.
+   - Provides centralized server-side logic for all components.
 
 ---
 
@@ -45,9 +52,18 @@ To set up and run the project, ensure you have the following:
 
 - **Node.js** (v21.0.0 or higher): Required for running the development servers and building the applications.
 - **npm or yarn**: For managing dependencies.
-- **Firebase Project**: To store room and business hours data.
+- **MongoDB**: Required for the production environment to store room and business hours data.
 - **Metropolia Open Data API Key**: For accessing room reservation data.
 - **Modern Browser**: For testing the frontend applications.
+
+### Production Prerequisites
+
+For deploying the application to a production environment:
+
+- **PM2**: Process manager for Node.js applications to keep them alive in production.
+- **MongoDB**: Database for storing room and business hours data.
+- **Environment Variables**: Set up appropriate environment variables as described in [DEPLOYMENT.md](./DEPLOYMENT.md).
+- **SSL Certificates**: For securing the application in production.
 
 ---
 
@@ -57,12 +73,28 @@ To set up and run the project, ensure you have the following:
 - [InfoScreenSvelte Documentation](./infoscreensvelte/README.md)
 - [InfoScreenReact Documentation](./infoscreenreact/README.md)
 - [RoomManagementFrontend Documentation](./RoomManagementFrontend/README.md)
+- [Production Deployment Guide](./DEPLOYMENT.md)
+
+---
+
+## Production Architecture
+
+The `production` directory contains the server-side code deployed in production. Key components include:
+
+- **infoScreenApi.js**: Main Express.js server file handling API requests and authentication.
+- **ecosystem.config.cjs**: PM2 configuration for process management.
+- **middleware/auth.js**: Authentication middleware to secure API endpoints.
+- **models/**: Mongoose models for MongoDB data schemas.
+- **routes/**: API route handlers for various endpoints.
+- **utils/**: Utility functions including constants, logging, and API helpers.
+
+For detailed deployment instructions, refer to the [Production Deployment Guide](./DEPLOYMENT.md).
 
 ---
 
 ## Metropolia Open data documentation
 
--- [Metropolia Open Data Documentation (wiki.metropolia.fi)](https://wiki.metropolia.fi/display/opendata/Varaukset)
+- [Metropolia Open Data Documentation (wiki.metropolia.fi)](https://wiki.metropolia.fi/display/opendata/Varaukset)
 
 ## Contributors
 
